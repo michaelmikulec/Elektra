@@ -15,6 +15,9 @@
 * Models are trained on EEG and Spectrogram Data
 
 ## UI Module
+Requirements:
+  * Input: accepts parquet or csv file with EEG signal data or spectrogram data
+  * Output: prints classification of input file to screen
 
 ## Machine Learning Module
 
