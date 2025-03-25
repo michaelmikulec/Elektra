@@ -55,21 +55,21 @@ def label_data():
     try:
       eeg_df = pd.read_parquet(eeg_file_path)
       eeg_event_df = extract_event_window(eeg_df, eeg_offset, eeg_rows_per_second, eeg_event_duration)
-      if quality_check(eeg_id, eeg_event_df):
-        eeg_output_path = os.path.join(labeled_eeg_dir, f"{label_id}_{label}_{eeg_id}_{eeg_sub_id}.parquet")
-        eeg_event_df.to_parquet(eeg_output_path, index=False)
+      eeg_output_path = os.path.join(labeled_eeg_dir, f"{label_id}_{label}_{eeg_id}_{eeg_sub_id}.parquet")
     except:
       print(f"Error handling EEG {eeg_id}")
+    if quality_check(eeg_id, eeg_event_df):
+      eeg_event_df.to_parquet(eeg_output_path, index=False)
 
     spec_file_path = find_parquet_file(unlabeled_spec_dir, spec_id)
     try:
       spec_df = pd.read_parquet(spec_file_path)
       spec_event_df = extract_event_window(spec_df, spec_offset, spec_rows_per_second, spec_event_duration)
-      if quality_check(spec_id, spec_event_df):
-        spec_output_path = os.path.join(labeled_spec_dir, f"{label_id}_{label}_{spec_id}_{spec_sub_id}.parquet")
-        spec_event_df.to_parquet(spec_output_path, index=False)
+      spec_output_path = os.path.join(labeled_spec_dir, f"{label_id}_{label}_{spec_id}_{spec_sub_id}.parquet")
     except:
       print(f"Error handling Spectrogram {spec_id}")
+    if quality_check(spec_id, spec_event_df):
+      spec_event_df.to_parquet(spec_output_path, index=False)
 
 if __name__ == "__main__":
   start = time.time()
