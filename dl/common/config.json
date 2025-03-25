@@ -1,5 +1,27 @@
 {
   "labels": ["Seizure", "LPD", "GPD", "LRDA", "GRDA", "Other"],
   "label_index": { "Seizure": 0, "LRDA": 1, "GRDA": 2, "LPD": 3, "GPD": 4, "Other": 5 },
-  "indexed_labels": { "0": "Seizure", "1": "LRDA", "2": "GRDA", "3": "LPD", "4": "GPD", "5": "Other" }
+  "indexed_labels": { "0": "Seizure", "1": "LRDA", "2": "GRDA", "3": "LPD", "4": "GPD", "5": "Other" },
+
+  "training_metadata_csv": "./data/train.csv",
+  "unlabeled_eegs_dir": "./data/train_eegs/",
+  "labeled_eegs_dir": "./data/labeled_train_eegs/",
+  "unlabeled_specs_dir": "./data/train_specs/",
+  "labeled_specs_dir": "./data/labeled_train_specs/",
+
+  "eeg_id": "eeg_id",
+  "eeg_sub_id": "eeg_sub_id",
+  "eeg_offset": "eeg_label_offset_seconds",
+  "eeg_rows_per_second": 200,
+  "eeg_event_duration": 50,
+
+  "spec_id": "spectrogram_id",
+  "spec_sub_id": "spectrogram_sub_id",
+  "spec_offset": "spectrogram_label_offset_seconds",
+  "spec_rows_per_second": 0.5,
+  "spec_event_duration": 600,
+
+  "label": "expert_consenses"
+
+  
 }
