@@ -59,6 +59,7 @@ def label_data(
         print(f"Error handling Spectrogram {spec_id}")
 
 if __name__ == "__main__":
+  start = time.time()
   label_data(
     metadata_csv="./data/train.csv", 
     eeg_folder="./data/train_eegs/", 
@@ -70,3 +71,5 @@ if __name__ == "__main__":
     label_eegs=False,
     label_specs=False
   )
+  end = time.time()
+  print(f"Labeling took {end - start} seconds")
