@@ -1,0 +1,152 @@
+<mxfile host="65bd71144e">
+    <diagram id="LkHYJnT7RhMnUjYPVCgU" name="Page-1">
+        <mxGraphModel dx="1690" dy="804" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="47" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;" parent="1" source="3" target="40" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="&lt;div style=&quot;font-size: 11px;&quot;&gt;&lt;div style=&quot;text-align: center; font-size: 11px;&quot;&gt;&lt;span style=&quot;font-family: &amp;quot;Courier New&amp;quot;; background-color: initial; font-size: 11px;&quot;&gt;metadata&lt;/span&gt;&lt;/div&gt;&lt;span style=&quot;font-family: &amp;quot;Courier New&amp;quot;; font-size: 11px;&quot;&gt;&lt;ol style=&quot;font-size: 11px;&quot;&gt;&lt;li style=&quot;font-size: 11px;&quot;&gt;eeg_id&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&amp;nbsp;&lt;/li&gt;&lt;li style=&quot;font-size: 11px;&quot;&gt;eeg_sub_id&lt;/li&gt;&lt;li style=&quot;font-size: 11px;&quot;&gt;eeg_offset&lt;br style=&quot;font-size: 11px;&quot;&gt;&lt;/li&gt;&lt;li style=&quot;font-size: 11px;&quot;&gt;label&lt;/li&gt;&lt;/ol&gt;&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;labelPosition=center;verticalLabelPosition=middle;verticalAlign=top;labelBackgroundColor=none;labelBorderColor=none;horizontal=1;arcSize=0;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="109.03" y="150" width="200" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;fontFamily=Courier New;fontSize=11;spacing=0;verticalAlign=top;align=center;" parent="1" source="8" target="10" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="&lt;div style=&quot;font-size: 11px;&quot;&gt;&lt;font face=&quot;Courier New&quot; style=&quot;font-size: 11px;&quot;&gt;search for {id}.parquet in training eegs folder&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;labelPosition=center;verticalLabelPosition=middle;verticalAlign=top;labelBackgroundColor=none;labelBorderColor=none;horizontal=1;arcSize=0;spacing=0;fontSize=11;flipV=1;" parent="1" vertex="1">
+                    <mxGeometry x="19.03" y="484" width="380" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;fontFamily=Courier New;fontSize=11;entryX=0.5;entryY=0;entryDx=0;entryDy=0;spacing=0;verticalAlign=top;align=center;" parent="1" source="10" target="15" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="218.57000000000002" y="506" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="10" value="&lt;div style=&quot;font-size: 11px;&quot;&gt;&lt;font face=&quot;Courier New&quot; style=&quot;font-size: 11px;&quot;&gt;remove the first&lt;br style=&quot;font-size: 11px;&quot;&gt;({offset}(s) * 200(row/s)) rows&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;labelPosition=center;verticalLabelPosition=middle;verticalAlign=top;labelBackgroundColor=none;labelBorderColor=none;horizontal=1;arcSize=0;spacing=0;fontSize=11;flipV=1;" parent="1" vertex="1">
+                    <mxGeometry x="19.03" y="566" width="380" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="18" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;fontFamily=Courier New;fontSize=11;spacing=0;verticalAlign=top;align=center;" parent="1" source="15" target="17" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="&lt;div style=&quot;font-size: 11px;&quot;&gt;&lt;font face=&quot;Courier New&quot; style=&quot;font-size: 11px;&quot;&gt;keep only the next&lt;br style=&quot;font-size: 11px;&quot;&gt;50(s) * 200(row/s) = 10000(row) rows&lt;br style=&quot;font-size: 11px;&quot;&gt;&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;labelPosition=center;verticalLabelPosition=middle;verticalAlign=top;labelBackgroundColor=none;labelBorderColor=none;horizontal=1;arcSize=0;spacing=0;fontSize=11;flipV=1;" parent="1" vertex="1">
+                    <mxGeometry x="19.03" y="648" width="380" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="&lt;div style=&quot;font-size: 11px;&quot;&gt;&lt;font face=&quot;Courier New&quot; style=&quot;font-size: 11px;&quot;&gt;save as eeg_{id}_{sub_id}_{label}.parquet to labeled training eegs folder&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;labelPosition=center;verticalLabelPosition=middle;verticalAlign=top;labelBackgroundColor=none;labelBorderColor=none;horizontal=1;arcSize=0;spacing=0;fontSize=11;flipV=1;" parent="1" vertex="1">
+                    <mxGeometry x="19.03" y="730" width="380" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="31" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;fontFamily=Courier New;fontSize=12;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="660.375" y="540" as="targetPoint"/>
+                        <mxPoint x="699.4428571428573" y="523" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="33" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;fontFamily=Courier New;fontSize=12;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="660.3428571428572" y="590" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="37" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="36" target="63" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="660.16" y="299" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="36" value="&lt;div style=&quot;font-size: 11px;&quot;&gt;&lt;div style=&quot;text-align: center; font-size: 11px;&quot;&gt;&lt;span style=&quot;font-family: &amp;quot;Courier New&amp;quot;; background-color: initial; font-size: 11px;&quot;&gt;metadata&lt;/span&gt;&lt;/div&gt;&lt;span style=&quot;font-family: &amp;quot;Courier New&amp;quot;; font-size: 11px;&quot;&gt;&lt;ol style=&quot;font-size: 11px;&quot;&gt;&lt;li style=&quot;font-size: 11px;&quot;&gt;spectrogram_id&lt;/li&gt;&lt;li style=&quot;font-size: 11px;&quot;&gt;spectrogram_sub_id&lt;/li&gt;&lt;li style=&quot;font-size: 11px;&quot;&gt;spectrogram_offset&lt;br style=&quot;font-size: 11px;&quot;&gt;&lt;/li&gt;&lt;li style=&quot;font-size: 11px;&quot;&gt;label&lt;/li&gt;&lt;/ol&gt;&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;labelPosition=center;verticalLabelPosition=middle;verticalAlign=top;labelBackgroundColor=none;labelBorderColor=none;horizontal=1;arcSize=0;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="540" y="150" width="200" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="43" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;spacing=0;verticalAlign=top;align=center;fontSize=11;" parent="1" source="38" target="8" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="38" value="&lt;div style=&quot;font-size: 11px;&quot;&gt;&lt;font face=&quot;Courier New&quot; style=&quot;font-size: 11px;&quot;&gt;iterrows() for id, sub_id, and offset&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;labelPosition=center;verticalLabelPosition=middle;verticalAlign=top;labelBackgroundColor=none;labelBorderColor=none;horizontal=1;arcSize=0;spacing=0;fontSize=11;flipV=1;" parent="1" vertex="1">
+                    <mxGeometry x="19.03" y="402" width="380" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="39" value="" style="edgeStyle=none;html=1;fontSize=11;" parent="1" source="40" target="38" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="40" value="&lt;div style=&quot;font-size: 11px;&quot;&gt;&lt;font face=&quot;Courier New&quot; style=&quot;font-size: 11px;&quot;&gt;load into df&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;labelPosition=center;verticalLabelPosition=middle;verticalAlign=top;labelBackgroundColor=none;labelBorderColor=none;horizontal=1;arcSize=0;fontSize=11;flipV=1;" parent="1" vertex="1">
+                    <mxGeometry x="19.03" y="320" width="380" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="50" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="48" target="36" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="497.95000000000005" y="132" as="sourcePoint"/>
+                        <mxPoint x="645.4250000000004" y="-8" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="48" value="&lt;div style=&quot;font-size: 11px;&quot;&gt;&lt;div style=&quot;font-size: 11px;&quot;&gt;read metadata &lt;br&gt;from train.csv&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;labelPosition=center;verticalLabelPosition=middle;verticalAlign=top;labelBackgroundColor=none;labelBorderColor=none;horizontal=1;arcSize=0;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="370" y="80" width="116" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="51" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="48" target="3" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="340" y="-8" as="sourcePoint"/>
+                        <mxPoint x="672" y="82" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="52" value="procedure for adding labels to training data" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=20;" parent="1" vertex="1">
+                    <mxGeometry x="225" y="15" width="400" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="53" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;fontFamily=Courier New;fontSize=11;spacing=0;verticalAlign=top;align=center;" parent="1" source="54" target="56" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="54" value="&lt;div style=&quot;font-size: 11px;&quot;&gt;&lt;font face=&quot;Courier New&quot; style=&quot;font-size: 11px;&quot;&gt;search for {id}.parquet in training spectrograms folder&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;labelPosition=center;verticalLabelPosition=middle;verticalAlign=top;labelBackgroundColor=none;labelBorderColor=none;horizontal=1;arcSize=0;spacing=0;fontSize=11;flipV=0;flipH=1;" parent="1" vertex="1">
+                    <mxGeometry x="450" y="484" width="380" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="55" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;fontFamily=Courier New;fontSize=11;entryX=0.5;entryY=0;entryDx=0;entryDy=0;spacing=0;verticalAlign=top;align=center;" parent="1" source="56" target="58" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="688.9399999999999" y="519" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="56" value="&lt;div style=&quot;font-size: 11px;&quot;&gt;&lt;font face=&quot;Courier New&quot; style=&quot;font-size: 11px;&quot;&gt;remove the first &lt;br style=&quot;font-size: 11px;&quot;&gt;()&amp;nbsp;rows&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;labelPosition=center;verticalLabelPosition=middle;verticalAlign=top;labelBackgroundColor=none;labelBorderColor=none;horizontal=1;arcSize=0;spacing=0;fontSize=11;flipV=0;flipH=1;" parent="1" vertex="1">
+                    <mxGeometry x="450" y="566" width="380" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="57" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;fontFamily=Courier New;fontSize=11;spacing=0;verticalAlign=top;align=center;" parent="1" source="58" target="59" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="58" value="&lt;div style=&quot;font-size: 11px;&quot;&gt;&lt;font face=&quot;Courier New&quot; style=&quot;font-size: 11px;&quot;&gt;keep only the next &lt;br style=&quot;font-size: 11px;&quot;&gt;() rows&lt;br style=&quot;font-size: 11px;&quot;&gt;&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;labelPosition=center;verticalLabelPosition=middle;verticalAlign=top;labelBackgroundColor=none;labelBorderColor=none;horizontal=1;arcSize=0;spacing=0;fontSize=11;flipV=0;flipH=1;" parent="1" vertex="1">
+                    <mxGeometry x="450" y="648" width="380" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="59" value="&lt;div style=&quot;font-size: 11px;&quot;&gt;&lt;font face=&quot;Courier New&quot; style=&quot;font-size: 11px;&quot;&gt;save as spectrogram_{id}_{sub_id}_{label}.parquet to labeled training eegs folder&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;labelPosition=center;verticalLabelPosition=middle;verticalAlign=top;labelBackgroundColor=none;labelBorderColor=none;horizontal=1;arcSize=0;spacing=0;fontSize=11;flipV=0;flipH=1;" parent="1" vertex="1">
+                    <mxGeometry x="450" y="730" width="380" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="60" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;spacing=0;verticalAlign=top;align=center;fontSize=11;" parent="1" source="61" target="54" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="61" value="&lt;div style=&quot;font-size: 11px;&quot;&gt;&lt;font face=&quot;Courier New&quot; style=&quot;font-size: 11px;&quot;&gt;iterrows() for id, sub_id, and offset&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;labelPosition=center;verticalLabelPosition=middle;verticalAlign=top;labelBackgroundColor=none;labelBorderColor=none;horizontal=1;arcSize=0;spacing=0;fontSize=11;flipV=0;flipH=1;" parent="1" vertex="1">
+                    <mxGeometry x="450" y="402" width="380" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="62" value="" style="edgeStyle=none;html=1;fontSize=11;" parent="1" source="63" target="61" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="63" value="&lt;div style=&quot;font-size: 11px;&quot;&gt;&lt;font face=&quot;Courier New&quot; style=&quot;font-size: 11px;&quot;&gt;load into df&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=center;labelPosition=center;verticalLabelPosition=middle;verticalAlign=top;labelBackgroundColor=none;labelBorderColor=none;horizontal=1;arcSize=0;fontSize=11;flipV=0;flipH=1;" parent="1" vertex="1">
+                    <mxGeometry x="450" y="320" width="380" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="65" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" parent="1" source="17" target="90" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="209.53" y="794" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="66" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontSize=11;" parent="1" source="59" target="91" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="639.3844827586207" y="660" as="sourcePoint"/>
+                        <mxPoint x="639.53" y="794" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="92" value="" style="group" vertex="1" connectable="0" parent="1">
+                    <mxGeometry x="565" y="820" width="150" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="91" value="" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=middle;outlineConnect=0;align=center;shape=mxgraph.office.concepts.folder;labelBorderColor=none;fontFamily=Courier New;fontSize=16;" parent="92" vertex="1">
+                    <mxGeometry width="150" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="67" value="training spectrograms folder" style="whiteSpace=wrap;html=1;verticalAlign=top;rounded=1;labelBackgroundColor=none;labelBorderColor=none;arcSize=0;fontSize=11;flipV=0;flipH=1;fontFamily=Courier New;" parent="92" vertex="1">
+                    <mxGeometry x="15" y="40" width="120" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="93" value="" style="group" vertex="1" connectable="0" parent="1">
+                    <mxGeometry x="134.53" y="824" width="148.99999999999997" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="90" value="" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=middle;outlineConnect=0;align=center;shape=mxgraph.office.concepts.folder;labelBorderColor=none;fontFamily=Courier New;fontSize=16;" parent="93" vertex="1">
+                    <mxGeometry width="149" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="64" value="training eegs folder" style="whiteSpace=wrap;html=1;verticalAlign=top;rounded=1;labelBackgroundColor=none;labelBorderColor=none;arcSize=0;fontSize=11;flipV=1;fontFamily=Courier New;" parent="93" vertex="1">
+                    <mxGeometry x="14.5" y="35" width="120" height="50" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
