@@ -26,11 +26,13 @@ def quality_check(id, df):
   return quality
 
 def label_data():
-  metadata = pd.read_csv("./data/train.csv")
-  unlabeled_eeg_dir = "./data/train_eegs"
-  unlabeled_spec_dir = "./data/train_spectrograms"
-  labeled_eeg_dir = "./data/labeled_train_eegs"
-  labeled_spec_dir = "./data/labeled_train_specs"
+  wd = os.getcwd()
+  unlabeled_eeg_dir = os.path.join(wd, "data", "train_eegs")
+  unlabeled_spec_dir = os.path.join(wd, "data", "train_spectrograms")
+  labeled_eeg_dir = os.path.join(wd, "data", "labeled_train_eegs")
+  labeled_spec_dir = os.path.join(wd, "data", "labeled_train_specs")
+  metadata_path = os.path.join(wd, "data", "train.csv")
+  metadata = pd.read_csv(metadata_path)
 
   for index, row in metadata.iterrows():
     eeg_id = row["eeg_id"]
