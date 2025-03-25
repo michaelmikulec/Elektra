@@ -1,0 +1,5 @@
+{
+  "labels": ["Seizure", "LPD", "GPD", "LRDA", "GRDA", "Other"],
+  "label_index": { "Seizure": 0, "LRDA": 1, "GRDA": 2, "LPD": 3, "GPD": 4, "Other": 5 },
+  "indexed_labels": { "0": "Seizure", "1": "LRDA", "2": "GRDA", "3": "LPD", "4": "GPD", "5": "Other" }
+}
