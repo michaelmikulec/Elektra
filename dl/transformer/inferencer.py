@@ -3,7 +3,6 @@ from torch.nn import DataParallel
 from . import config, EEGTransformer
 
 def infer(inputs, model_path):
-  
   device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
   model = EEGTransformer(
     input_dim = config["input_dim"],

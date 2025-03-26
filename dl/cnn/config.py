@@ -19,5 +19,5 @@ config = {
   "batch_size": 8,
   "learning_rate": 0.001,
   "num_epochs": 10,
-  "model_save_path": os.path.join(os.getcwd(), "cnn_model_checkpoint.pt")
+  "model_save_path": os.path.join(os.getcwd(), "cnn.pt")
 }
