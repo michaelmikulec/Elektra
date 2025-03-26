@@ -5,17 +5,6 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, random_split
 import numpy as np
 
-# Make sure to import or define your EEGDataset and EEGTransformer from your files:
-# from eeg_dataset import EEGDataset
-# from eeg_transformer import EEGTransformer
-
-# For this example, let's assume these classes are in the same file or have been defined above:
-# class EEGDataset(Dataset): ...
-# class EEGTransformer(nn.Module): ...
-
-#####################
-# Hyperparameters
-#####################
 DATA_FOLDER = "/path/to/eeg/parquet_files"
 LABEL_INDEX = {
     "Seizure": 0,
@@ -25,8 +14,6 @@ LABEL_INDEX = {
     "GPD": 4,
     "Other": 5
 }
-
-# Model hyperparameters
 INPUT_DIM = 20            # Example: 20 EEG channels
 MODEL_DIM = 128
 NUM_HEADS = 4
@@ -35,22 +22,15 @@ DIM_FEEDFORWARD = 256
 DROPOUT = 0.1
 NUM_CLASSES = len(LABEL_INDEX)
 MAX_LEN = 12000  # Based on your expected maximum sequence length
-
-# Training hyperparameters
 BATCH_SIZE = 16
 LEARNING_RATE = 1e-3
 NUM_EPOCHS = 10
 VAL_SPLIT = 0.2  # Fraction of data to use for validation
 SEED = 42        # For reproducibility
-
-# Set random seeds
 torch.manual_seed(SEED)
 np.random.seed(SEED)
 
 def train_one_epoch(model, dataloader, criterion, optimizer, device):
-    """
-    One epoch of training. Returns average loss and accuracy.
-    """
     model.train()
     running_loss = 0.0
     correct = 0
@@ -82,9 +62,6 @@ def train_one_epoch(model, dataloader, criterion, optimizer, device):
 
 
 def validate_one_epoch(model, dataloader, criterion, device):
-    """
-    One epoch of validation. Returns average loss and accuracy.
-    """
     model.eval()
     running_loss = 0.0
     correct = 0
