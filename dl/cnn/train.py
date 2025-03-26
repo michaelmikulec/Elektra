@@ -6,7 +6,6 @@ from torch.nn import DataParallel
 from . import config, EEGDataset, EEGCNN
 
 def train():
-  
   dataset = EEGDataset(config["training_data"], config["label_index"])
   loader = DataLoader(dataset, batch_size=config["batch_size"], shuffle=True)
   device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
