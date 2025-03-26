@@ -4,15 +4,11 @@ setup(
   name="Elektra",
   version="0.1.0",
   description="Software application to classify harmful brain activities in EEG signals using deep learning and machine learning",
-  author="Michael Mikulec",
+  author="Michael Mikulec, Kevin Tran, Intisarul Huda, Manuel Jimenez, Estuardo Melendez",
   author_email="michaelmikulec1@gmail.com",
   url="https://github.com/michaelmikulec/Elektra",
   packages=find_packages(),
-  install_requires=[
-    "pandas",
-    "torch",
-    "pyarrow"
-  ],
+  install_requires=[],
   classifiers=[
     "Programming Language :: Python :: 3.13",
     "Operating System :: OS Independent"
