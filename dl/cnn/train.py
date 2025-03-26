@@ -1,28 +1,22 @@
-import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from torch.nn import DataParallel
-from . import config, EEGDataset, EEGTransformer
+from . import config, EEGDataset, EEGCNN
 
 def train():
   
   dataset = EEGDataset(config["training_data"], config["label_index"])
   loader = DataLoader(dataset, batch_size=config["batch_size"], shuffle=True)
   device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-  model = EEGTransformer(
-    input_dim = config["input_dim"],
-    model_dim = config["model_dim"],
-    num_heads = config["num_heads"],
-    num_layers = config["num_layers"],
-    dim_feedforward = config["dim_feedforward"],
-    dropout = config["dropout"],
-    num_classes = config["num_classes"],
-    max_len = config["max_len"],
-    use_learnable_pos_emb = config["use_learnable_pos_emb"],
-    use_cls_token = config["use_cls_token"],
-    pooling = config["pooling"]
+  model = EEGCNN(
+    input_dim=config["input_dim"],
+    num_filters=config["num_filters"],
+    num_layers=config["num_layers"],
+    kernel_size=config["kernel_size"],
+    dropout=config["dropout"],
+    num_classes=config["num_classes"]
   )
   if torch.cuda.device_count() > 1:
     model = DataParallel(model)

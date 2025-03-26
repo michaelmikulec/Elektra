@@ -11,18 +11,13 @@ config = {
     "Other": 5
   },
   "input_dim": 20,
-  "model_dim": 128,
-  "num_heads": 4,
+  "num_filters": 32,
   "num_layers": 2,
-  "dim_feedforward": 256,
+  "kernel_size": 5,
   "dropout": 0.1,
   "num_classes": 6,
-  "max_len": 10000,
-  "use_learnable_pos_emb": True,
-  "use_cls_token": True,
-  "pooling": "cls",
   "batch_size": 8,
   "learning_rate": 0.001,
   "num_epochs": 10,
-  "model_save_path": os.path.join(os.getcwd(), "data", "transformer.pt")
+  "model_save_path": os.path.join(os.getcwd(), "cnn_model_checkpoint.pt")
 }
