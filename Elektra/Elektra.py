@@ -4,7 +4,7 @@ def on_click():
     label.config(text="Hello, Packaged Executable!")
 
 root = tk.Tk()
-root.title("My GUI App")
+root.title("Elektra")
 root.geometry("300x150")
 
 label = tk.Label(root, text="Click the button")
