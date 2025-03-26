@@ -4,7 +4,7 @@ import io
 import base64
 import random
 
-# Simulate model loading (replace with actual model)
+# (replace with actual model)
 MODEL_ACCURACY = 0.89  # e.g., 89% test accuracy
 
 EEG_CATEGORIES = ['Seizure', 'LPD', 'GPD', 'LRDA', 'GRDA', 'Other']
