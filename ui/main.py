@@ -3,14 +3,18 @@ import pandas as pd
 import io
 import base64
 import random
+import os
 
-# (replace with actual model)
+# Placeholder for actual model accuracy
 MODEL_ACCURACY = 0.89  # e.g., 89% test accuracy
 
+# EEG classification categories
 EEG_CATEGORIES = ['Seizure', 'LPD', 'GPD', 'LRDA', 'GRDA', 'Other']
 
+# Create Dash app
 app = Dash(__name__)
 
+# App layout
 app.layout = html.Div(children=[
     html.H1("Elektra"),
     html.H2("Harmful Brain Activity Classification"),
@@ -27,7 +31,7 @@ app.layout = html.Div(children=[
     ),
 
     html.Div(id='output-data-upload'),
-    
+
     html.H3("Display Elements"),
     html.Ul([
         html.Li(id='model-accuracy'),
@@ -36,6 +40,7 @@ app.layout = html.Div(children=[
     ])
 ])
 
+# Callback for handling upload and inference
 @app.callback(
     Output('output-data-upload', 'children'),
     Output('model-accuracy', 'children'),
@@ -51,15 +56,22 @@ def load_and_infer(contents, filename):
     content_type, content_string = contents.split(',')
     decoded = base64.b64decode(content_string)
 
+    # Ensure 'data/' directory exists
+    os.makedirs("data", exist_ok=True)
+    save_path = os.path.join("data", filename)
+
     try:
+        # Read and save file
         if filename.endswith('.csv'):
             df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+            df.to_csv(save_path, index=False)
         elif filename.endswith('.parquet'):
             df = pd.read_parquet(io.BytesIO(decoded))
+            df.to_parquet(save_path, index=False)
         else:
             return "Unsupported file format. Please upload a CSV or Parquet file.", "", "", ""
 
-        # Placeholder for actual inference
+        # Simulated inference
         predicted_index = random.randint(0, 5)
         predicted_class = EEG_CATEGORIES[predicted_index]
         confidence = round(random.uniform(0.6, 0.99), 2)
@@ -67,6 +79,7 @@ def load_and_infer(contents, filename):
         return (
             html.Div([
                 html.H5(f"Loaded {filename}"),
+                html.P(f"Saved to: {save_path}"),
                 html.Pre(df.head().to_string(index=False))
             ]),
             f"Model Accuracy: {MODEL_ACCURACY * 100:.2f}%",
@@ -77,5 +90,6 @@ def load_and_infer(contents, filename):
     except Exception as e:
         return f"Error loading file: {e}", "", "", ""
 
+# Run the app
 if __name__ == '__main__':
     app.run(debug=True)
