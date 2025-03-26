@@ -1,4 +1,5 @@
 data
-archive
+logs
 .venv
 *.pyc
+__pycache__
