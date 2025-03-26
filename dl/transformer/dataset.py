@@ -4,7 +4,6 @@ import pandas as pd
 from torch.utils.data import Dataset
 
 class EEGDataset(Dataset):
-  
   def __init__(self, data_folder, label_index):
     super().__init__()
     self.data_folder = data_folder

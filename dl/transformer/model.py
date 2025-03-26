@@ -3,7 +3,6 @@ import torch
 import torch.nn as nn
 
 class SinusoidalPositionalEncoding(nn.Module):
-  
   def __init__(self, d_model, max_len=10000):
     super().__init__()
     pos_data = torch.zeros(max_len, d_model)
@@ -22,7 +21,6 @@ class SinusoidalPositionalEncoding(nn.Module):
     return x
 
 class LearnablePositionalEncoding(nn.Module):
-  
   def __init__(self, d_model, max_len=10000):
     super().__init__()
     self.pos_data = nn.Parameter(torch.zeros(1, max_len, d_model))
@@ -35,7 +33,6 @@ class LearnablePositionalEncoding(nn.Module):
     return x
 
 class EEGTransformer(nn.Module):
-  
   def __init__(
     self,
     input_dim = 20,
