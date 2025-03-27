@@ -1,7 +1,8 @@
 import os
 
 config = {
-  "training_data": os.path.join(os.getcwd(), "data", "labeled_train_eegs"),
+  "training_data": os.path.join(os.getcwd(), "data", "labeled_training_spectrograms"),
+  "num_classes": 6,
   "label_index": {
     "Seizure": 0,
     "LRDA": 1,
@@ -15,9 +16,9 @@ config = {
   "num_layers": 2,
   "kernel_size": 5,
   "dropout": 0.1,
-  "num_classes": 6,
-  "batch_size": 8,
+  "batch_size": 1,
+  "num_workers": 1,
   "learning_rate": 0.001,
-  "num_epochs": 10,
-  "model_save_path": os.path.join(os.getcwd(), "cnn.pt")
+  "num_epochs": 1,
+  "model_save_path": os.path.join(os.getcwd(), "dl", "cnn", "cnn.pt")
 }
