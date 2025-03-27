@@ -1,7 +1,8 @@
+from typing import Any 
 import os
 
-config = {
-  "training_data": os.path.join(os.getcwd(), "data", "labeled_training_eegs"),
+config:dict[str, Any] = {
+  "training_data": os.path.join(os.getcwd(), "Elektra", "data", "training_data", "eegs"),
   "num_classes": 6,
   "label_index": {
     "Seizure": 0,

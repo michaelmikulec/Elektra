@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 import time
-from .config import config
+from ..config import config
 
 def find_parquet_file(folder, file_id):
   path = os.path.join(folder, f"{file_id}.parquet")

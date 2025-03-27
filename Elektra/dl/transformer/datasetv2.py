@@ -5,18 +5,18 @@ from torch.utils.data import Dataset, DataLoader
 from config import config
 
 class EEGDataset(Dataset):
-  def __init__(self, dir, transform=None):
-    self.dir = dir
-    self.files = [ os.path.join(dir, fname) for fname in os.listdir(dir) if fname.endswith('.parquet') ]
+  def __init__(self, dir:str, transform=None):
+    self.dir:str = dir
+    self.files:list[str] = [ os.path.join(dir, fname) for fname in os.listdir(dir) if fname.endswith('.parquet') ]
     self.transform = transform
 
   def __len__(self): 
     return len(self.files)
 
   def __getitem__(self, idx):
-    file_path = self.files[idx]
-    label = int(os.path.basename(file_path).split('_')[0])
-    df = pd.read_parquet(file_path)
+    file_path:str = self.files[idx]
+    label:int = int(os.path.basename(file_path).split('_')[0])
+    df:pd.DataFrame = pd.read_parquet(file_path)
     data_tensor = torch.tensor(
       data = df.iloc[:, :-2].values, 
       dtype = torch.float32
@@ -26,7 +26,7 @@ class EEGDataset(Dataset):
     return data_tensor, label
 
 if __name__ == '__main__':
-  training_data = config['training_data']
+  training_data:str = config['training_data']
   eeg_dataset = EEGDataset(
     dir = training_data
   )

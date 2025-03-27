@@ -8,7 +8,15 @@ setup(
   author_email="michaelmikulec1@gmail.com",
   url="https://github.com/michaelmikulec/Elektra",
   packages=find_packages(),
-  install_requires=[],
+  install_requires=[
+    "pandas",
+    "pyarrow",
+    "fastparquet",
+    "torch",
+    "torchvision",
+    "torchaudio",
+
+  ],
   classifiers=[
     "Programming Language :: Python :: 3.13",
     "Operating System :: OS Independent"
