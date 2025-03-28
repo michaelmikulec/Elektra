@@ -1,3 +1,7 @@
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 from tqdm import tqdm
 import time
 import os
@@ -7,7 +11,6 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from torch.nn import DataParallel
 from torch.cuda.amp import autocast, GradScaler
-import warnings
 
 from model import EEGTransformer
 from dataset import EEGDataset
@@ -15,17 +18,15 @@ from config import dataset_config, training_config, model_config
 
 def train():
   start = time.time()
-
   dataset = EEGDataset(dataset_config["training_data"])
   loader = DataLoader(
     dataset,
     batch_size=training_config["batch_size"],
     shuffle=True,
-    num_workers=24,
+    num_workers=training_config['num_workers'],
     pin_memory=True,
     drop_last=True
   )
-
   device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
   model = EEGTransformer(**model_config)
 
@@ -65,21 +66,34 @@ def train():
     for inputs, targets in epoch_bar:
       inputs = inputs.to(device)
       targets = targets.to(device)
-
       optimizer.zero_grad()
 
       with autocast():
         outputs = model(inputs)
+
+        if torch.isnan(outputs).any() or torch.isinf(outputs).any():
+          epoch_bar.set_postfix(loss="NaN/Inf in outputs, skipping")
+          continue
+
         loss_value = criterion(outputs, targets)
 
-      scaler.scale(loss_value).backward()
-      scaler.step(optimizer)
-      scaler.update()
+        if torch.isnan(loss_value) or torch.isinf(loss_value):
+          epoch_bar.set_postfix(loss="NaN/Inf in loss, skipping")
+          continue
 
-      epoch_loss += loss_value.item()
-      epoch_bar.set_postfix(loss=f"{loss_value.item():.4f}")
+    scaler.scale(loss_value).backward()
 
-    training_bar.set_postfix(avg_loss=f"{epoch_loss / len(loader):.4f}")
+    scaler.unscale_(optimizer)
+    nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+
+    scaler.step(optimizer)
+    scaler.update()
+
+    epoch_loss += loss_value.item()
+    epoch_bar.set_postfix(loss=f"{loss_value.item():.4f}")
+
+  avg_loss = epoch_loss / len(loader)
+  training_bar.set_postfix(avg_loss=f"{avg_loss:.4f}")
 
   torch.save(model.state_dict(), model_path)
 
@@ -90,6 +104,4 @@ def train():
   print(f"Training time: {h:02.0f}:{m:02.0f}:{s:02.0f}")
 
 if __name__ == "__main__":
-  warnings.filterwarnings("ignore", category=UserWarning)
-  warnings.filterwarnings("ignore", category=FutureWarning)
   train()
