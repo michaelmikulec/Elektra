@@ -1,5 +1,4 @@
 import os
-from typing import Any
 
 transformer_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -19,8 +18,8 @@ dataset_config = {
 
 training_config = {
   "model_path": os.path.join(transformer_dir, "transformer.pth"),
-  "batch_size": 1,
-  "num_workers": 1,
+  "batch_size": 64,
+  "num_workers": 24,
   "learning_rate": 0.001,
   "num_epochs": 1
 }
