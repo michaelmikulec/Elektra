@@ -1,5 +1,6 @@
 from tqdm import tqdm
 import time
+import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -31,6 +32,13 @@ def train():
     model = DataParallel(model)
 
   model.to(device)
+
+  model_path = training_config["model_path"]
+  if os.path.exists(model_path):
+    print(f"Loading checkpoint from {model_path}")
+    model.load_state_dict(torch.load(model_path, map_location=device))
+  else:
+    print("No existing model found — initializing new model.")
 
   optimizer = optim.Adam(model.parameters(), lr=training_config["learning_rate"])
   criterion = nn.CrossEntropyLoss()
@@ -72,7 +80,7 @@ def train():
 
     training_bar.set_postfix(avg_loss=f"{epoch_loss / len(loader):.4f}")
 
-  torch.save(model.state_dict(), training_config["model_path"])
+  torch.save(model.state_dict(), model_path)
 
   runtime = time.time() - start
   h = runtime // 3600
