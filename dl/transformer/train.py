@@ -7,6 +7,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from torch.nn import DataParallel
 from torch.cuda.amp import autocast, GradScaler
+import warnings
 
 from model import EEGTransformer
 from dataset import EEGDataset
@@ -89,4 +90,6 @@ def train():
   print(f"Training time: {h:02.0f}:{m:02.0f}:{s:02.0f}")
 
 if __name__ == "__main__":
+  warnings.filterwarnings("ignore", category=UserWarning)
+  warnings.filterwarnings("ignore", category=FutureWarning)
   train()
