@@ -3,7 +3,7 @@ from typing import Any
 
 transformer_dir = os.path.dirname(os.path.abspath(__file__))
 
-dataset_config: dict[str, Any] = {
+dataset_config = {
   "training_data": os.path.join(os.getcwd(), "data", "training_data", "eegs"),
   "eeg_rows_per_second": 200,
   "eeg_event_duration": 50,
@@ -17,7 +17,7 @@ dataset_config: dict[str, Any] = {
   }
 }
 
-training_config: dict[str, Any] = {
+training_config = {
   "model_path": os.path.join(transformer_dir, "transformer.pth"),
   "batch_size": 1,
   "num_workers": 1,
@@ -25,7 +25,7 @@ training_config: dict[str, Any] = {
   "num_epochs": 1
 }
 
-model_config: dict[str, Any] = {
+model_config = {
   "input_dim": 20,
   "model_dim": 128,
   "num_heads": 4,
