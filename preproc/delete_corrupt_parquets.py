@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import pyarrow
 from datetime import datetime
-from config import config
+from Elektra.config import config
 
 def delete_corrupt_parquet_files(directory, log_path):
   deleted_files = []

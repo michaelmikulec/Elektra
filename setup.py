@@ -10,12 +10,13 @@ setup(
   packages=find_packages(),
   install_requires=[
     "pandas",
+    "matplotlib",
     "pyarrow",
     "fastparquet",
     "torch",
     "torchvision",
     "torchaudio",
-
+    "tqdm"
   ],
   classifiers=[
     "Programming Language :: Python :: 3.13",
