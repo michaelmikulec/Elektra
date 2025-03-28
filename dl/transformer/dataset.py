@@ -21,3 +21,8 @@ class EEGDataset(Dataset):
       dtype = torch.float32
     )
     return data_tensor, int_label
+
+if __name__ == "__main__":
+  dataset = EEGDataset("./Elektra/data/training_data/eegs")
+  labels = [dataset[i][1] for i in range(len(dataset))]
+  print("All labels:", labels)
