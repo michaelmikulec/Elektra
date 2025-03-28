@@ -20,15 +20,15 @@ training_config = {
   "model_path": os.path.join(transformer_dir, "transformer.pth"),
   "batch_size": 64,
   "num_workers": 24,
-  "learning_rate": 0.001,
+  "learning_rate": 0.00001,
   "num_epochs": 1
 }
 
 model_config = {
   "input_dim": 20,
   "model_dim": 128,
-  "num_heads": 4,
-  "num_layers": 2,
+  "num_heads": 8,
+  "num_layers": 4,
   "dim_feedforward": 256,
   "dropout": 0.1,
   "num_classes": 6,
