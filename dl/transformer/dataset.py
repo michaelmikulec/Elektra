@@ -12,7 +12,7 @@ class EEGDataset(Dataset):
   def __len__(self) -> int: 
     return len(self.dataset_files)
 
-  def __getitem__(self, idx) -> tuple[torch.Tensor, int]:
+  def __getitem__(self, idx):
     file_path: str = self.dataset_files[idx]
     int_label: int = int(os.path.basename(file_path).split('_')[0])
     df: pd.DataFrame = pd.read_parquet(file_path)
