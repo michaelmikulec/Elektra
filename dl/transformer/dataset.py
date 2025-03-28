@@ -6,7 +6,7 @@ from torch.utils.data import Dataset
 class EEGDataset(Dataset):
   def __init__(self, dataset_directory: str, transform=None):
     self.dataset_directory: str = dataset_directory
-    self.dataset_files: list[str] = sorted([os.path.join(dataset_directory, fname) for fname in os.listdir(dataset_directory) if fname.endswith('.parquet')])
+    self.dataset_files = sorted([os.path.join(dataset_directory, fname) for fname in os.listdir(dataset_directory) if fname.endswith('.parquet')])
     self.transform = transform
 
   def __len__(self) -> int: 
@@ -23,6 +23,8 @@ class EEGDataset(Dataset):
     return data_tensor, int_label
 
 if __name__ == "__main__":
-  dataset = EEGDataset("./Elektra/data/training_data/eegs")
+  dataset = EEGDataset("./data/training_data/eegs")
   labels = [dataset[i][1] for i in range(len(dataset))]
-  print("All labels:", labels)
+  for label in labels:
+    if label not in {0,1,2,3,4,5}:
+      print(label)
