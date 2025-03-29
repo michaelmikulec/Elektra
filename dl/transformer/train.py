@@ -1,4 +1,3 @@
-from locale import normalize
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
