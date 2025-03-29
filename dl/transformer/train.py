@@ -1,3 +1,4 @@
+from locale import normalize
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -13,12 +14,12 @@ from torch.nn import DataParallel
 from torch.cuda.amp import autocast, GradScaler
 
 from model import EEGTransformer
-from dataset import EEGDataset
+from dataset import EEGDataset, normalize_sample
 from config import dataset_config, training_config, model_config
 
 def train():
   start = time.time()
-  dataset = EEGDataset(dataset_config["training_data"])
+  dataset = EEGDataset(dataset_config["training_data"], normalize_sample)
   loader = DataLoader(
     dataset,
     batch_size=training_config["batch_size"],
