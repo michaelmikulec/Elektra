@@ -16,7 +16,8 @@ setup(
     "torch",
     "torchvision",
     "torchaudio",
-    "tqdm"
+    "tqdm",
+    "scipy"
   ],
   classifiers=[
     "Programming Language :: Python :: 3.13",

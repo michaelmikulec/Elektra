@@ -1,5 +1,4 @@
 data
-logs
 .venv
 *.pyc
 __pycache__
