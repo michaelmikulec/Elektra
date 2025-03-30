@@ -44,10 +44,3 @@ class EEGDataset(Dataset):
 
 
 if __name__ == "__main__":
-  subset: List[str] = select_subset("./data/training_data/eegs", 50);
-  dataset = EEGDataset(subset, normalize_sample);
-  labels = [dataset[i][1] for i in range(len(dataset))]
-  for label in labels:
-    if label not in {0,1,2,3,4,5}:
-      print(label)
-  print(len(labels))

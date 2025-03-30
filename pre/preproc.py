@@ -1,18 +1,10 @@
 import os
-from typing import List
+from typing import List, Tuple
 import pandas as pd
 import numpy as np
 
-def find_parquet_file(folder, file_id):
-  path = os.path.join(folder, f"{file_id}.parquet")
-  return path if os.path.exists(path) else None
 
-def extract_event_window(df, offset, rows_per_second, event_duration):
-  start = int(offset * rows_per_second)
-  stop = start + int(rows_per_second * event_duration)
-  return df.iloc[start:stop]
-
-def quality_check(file_id, df):
+def rmBadSamples(file_id, df):
   if df.empty:
     print("Error with id", file_id, "empty file")
     return False
@@ -36,7 +28,7 @@ def apply_notch_filter(input_dir, output_dir, fs=200, notch_freq=60.0, quality_f
       filtered_df[col] = filtfilt(b, a, df[col])
     filtered_df.to_parquet(os.path.join(output_dir, f_name), index=False)
 
-def delete_corrupt_parquet_files(directory, log_path):
+def deleteCorruptFiles(directory, log_path):
   deleted_files = []
   for root, _, files in os.walk(directory):
     for file in files:
@@ -63,69 +55,154 @@ def delete_corrupt_parquet_files(directory, log_path):
   print(f"\nDeleted {len(deleted_files)} corrupted parquet files.")
   return deleted_files
 
-def process_file(input_dir, output_dir, file_id, sub_id, offset, rps, dur, label_id, label_str):
-  path = find_parquet_file(input_dir, file_id)
-  if not path:
-    print("Error handling", file_id)
-    return
-  try:
-    df = pd.read_parquet(path)
-    window = extract_event_window(df, offset, rps, dur)
-  except:
-    print("Error handling", file_id)
-    return
-  if not quality_check(file_id, window):
-    return
-  out_path = os.path.join(output_dir, f"{label_id}_{label_str}_{file_id}_{sub_id}.parquet")
-  window.to_parquet(out_path, index=False)
 
-def label_data():
-  md = pd.read_csv(config["metadata_path"])
-  for _, row in md.iterrows():
-    lb = row["expert_consensus"]
-    lb_id = config["label_index"][lb]
-    process_file(
-      config["unlabeled_eeg_dir"],
-      config["labeled_eeg_dir"],
-      row["eeg_id"],
-      row["eeg_sub_id"],
-      row["eeg_label_offset_seconds"],
-      config["eeg_rows_per_second"],
-      config["eeg_event_duration"],
-      lb_id,
-      lb
-    )
-    process_file(
-      config["unlabeled_spec_dir"],
-      config["labeled_spec_dir"],
-      row["spectrogram_id"],
-      row["spectrogram_sub_id"],
-      row["spectrogram_label_offset_seconds"],
-      config["spec_rows_per_second"],
-      config["spec_event_duration"],
-      lb_id,
-      lb
-    )
+def process_eeg_windows(eegs, unprocEEGDir: str, procEEGDir: str):
+  if not os.path.exists(procEEGDir):
+    os.makedirs(procEEGDir)
+  fs = 200
+  for e in eegs:
+    id       = e[0]
+    subID    = e[1]
+    offset   = e[2]
+    labelID  = e[3]
+    intLabel = e[4]
+    srcPath = os.path.join(unprocEEGDir, f"{id}.parquet")
+    if not os.path.isfile(srcPath):
+      print(f"[WARNING] File not found: {srcPath}. Skipping.")
+      continue
 
-def preprocess_eeg_dataset():
-  pass
+    try:
+      df = pd.read_parquet(srcPath)
+    except Exception as ex:
+      print(f"[ERROR] Failed to read {srcPath}: {ex}. Skipping.")
+      continue
+
+    center: int = int(offset * fs) + (25 * fs)
+    start: int  = center - (5 * fs)
+    stop:  int  = center + (5 * fs)
+    if start < 0 or stop > len(df):
+      print(f"[WARNING] Window [{start}:{stop}] out of bounds for file {srcPath} (len={len(df)}). Skipping.")
+      continue
+
+    window_df = df.iloc[start:stop].copy()
+    if window_df.shape != (2000, 20):
+      print(f"[WARNING] Expected shape (2000, 20) but got {window_df.shape} in {srcPath}. Skipping.")
+      continue
+
+    mean = window_df.mean()
+    std = window_df.std()
+    if (std == 0).any():
+      print(f"[WARNING] Zero standard deviation in columns for {srcPath}. Skipping.")
+      continue
+
+    window_df = (window_df - mean) / std
+    if window_df.isnull().values.any():
+      print(f"[WARNING] Found NaN values after normalization in {srcPath}. Skipping.")
+      continue
+
+    arr = window_df.to_numpy()
+    if np.isinf(arr).any():
+      print(f"[WARNING] Found Inf values after normalization in {srcPath}. Skipping.")
+      continue
+    if (arr > 1e6).any() or (arr < -1e6).any():
+      print(f"[WARNING] Suspicious large magnitude values in {srcPath}. Skipping.")
+      continue
+
+    targetPath = os.path.join(procEEGDir, f"{intLabel}-{id}-{subID}-{labelID}.parquet")
+    try:
+      window_df.to_parquet(targetPath)
+      print(f"[INFO] Wrote processed window to {targetPath}")
+    except Exception as ex:
+      print(f"[ERROR] Failed to write {targetPath}: {ex}.")
+      continue
+
+
+def process_spectrogram_windows(eegs, unprocSpecDir: str, procSpecDir: str):
+  if not os.path.exists(procSpecDir):
+    os.makedirs(procSpecDir)
+  for s in eegs:
+    id       = s[0]
+    subID    = s[1]
+    offset   = s[2]
+    labelID  = s[3]
+    intLabel = s[4]
+    srcPath = os.path.join(unprocSpecDir, f"{id}.parquet")
+    if not os.path.isfile(srcPath):
+      print(f"[WARNING] File not found: {srcPath}. Skipping.")
+      continue
+    try:
+      df = pd.read_parquet(srcPath)
+    except Exception as ex:
+      print(f"[ERROR] Failed to read {srcPath}: {ex}. Skipping.")
+      continue
+
+    center: int = int(offset // 2) + 150
+    start: int  = center - 2
+    stop:  int  = center + 3
+    if start < 0 or stop > len(df):
+      print(f"[WARNING] Window [{start}:{stop}] out of bounds for file {srcPath} (len={len(df)}). Skipping.")
+      continue
+
+    window_df = df.iloc[start:stop].copy()
+    if len(window_df) != 5:
+      print(f"[WARNING] Expected 5 rows but got {len(window_df)} in {srcPath}. Skipping.")
+      continue
+    if window_df.isnull().values.any():
+      print(f"[WARNING] Found NaN values in window of file {srcPath}. Skipping.")
+      continue
+
+    window_df = window_df.iloc[:, 1:]
+    mean = window_df.mean()
+    std = window_df.std()
+    if (std == 0).any():
+      print(f"[WARNING] Zero standard deviation in {srcPath}. Skipping.")
+      continue
+
+    window_df = (window_df - mean) / std
+    arr = window_df.to_numpy()
+    if np.isinf(arr).any():
+      print(f"[WARNING] Found Inf values in {srcPath}. Skipping.")
+      continue
+    if (arr > 1e6).any() or (arr < -1e6).any():
+      print(f"[WARNING] Suspicious large magnitude values in {srcPath}. Skipping.")
+      continue
+
+    targetPath = os.path.join(procSpecDir, f"{intLabel}-{id}-{subID}_{labelID}.parquet")
+    try:
+      window_df.to_parquet(targetPath)
+      print(f"[INFO] Wrote processed window to {targetPath}")
+    except Exception as ex:
+      print(f"[ERROR] Failed to write {targetPath}: {ex}.")
+      continue
+
 
 if __name__ == "__main__":
-  fnames = os.listdir("./data/unprocessed_data/eegs/")
-  ids: List[int] = [int(os.path.basename(fname).split('.')[0]) for fname in fnames]
-
-  metadata = pd.read_csv("./data/metadata.csv")
-  e_ids: List[int] = []
+  labelMap:dict[str,int] = { "Seizure": 0, "LRDA": 1, "GRDA": 2, "LPD": 3, "GPD": 4, "Other": 5 };
+  metadataPath:str = "./data/metadata.csv";
+  eegs:List[Tuple]  = [];
+  specs:List[Tuple] = [];
+  metadata = pd.read_csv(metadataPath);
   for index, row in metadata.iterrows():
-    e_id: int = int(row['eeg_id'])
-    e_sub_id: int = int(row['eeg_sub_id'])
-    e_offset: int = int(row['eeg_label_offset_seconds'])
-    s_id: int = int(row['spectrogram_id'])
-    s_sub_id: int = int(row['spectrogram_sub_id'])
-    s_offset: int = int(row['spectrogram_label_offset_seconds'])
-    label_id: int = int(row['label_id'])
-    label: str = str(row['expert_consensus'])
+    try:
+      eID:int      = int(row['eeg_id']);
+      eSubID:int   = int(row['eeg_sub_id']);
+      eOffset:int  = int(row['eeg_label_offset_seconds']);
+      sID:int      = int(row['spectrogram_id']);
+      sSubID:int   = int(row['spectrogram_sub_id']);
+      sOffset:int  = int(row['spectrogram_label_offset_seconds']);
+      labelID:int  = int(row['label_id']);
+      strLabel:str = str(row['expert_consensus']);
+      intLabel:int = labelMap[strLabel];
+      eeg:Tuple    = (eID, eSubID, eOffset, intLabel, labelID);
+      spec:Tuple   = (sID, sSubID, sOffset, intLabel, labelID);
+      eegs.append(eeg); specs.append(spec);
+    except Exception as e:
+      print(f"Error: {e}\nContinuing...")
 
-  for file in os.listdir(fnames):
-    print(file)
-   
+  unprocEEGDir:str = "./data/unprocessed_data/eegs/"
+  procEEGDir:str = "./data/training_data/eegs/"
+  process_eeg_windows(eegs, unprocEEGDir, procEEGDir)
+
+  unprocSpecDir:str = "./data/unprocessed_data/spectrograms/"
+  procSpecDir:str = "./data/training_data/spectrograms/"
+  process_spectrogram_windows(eegs, unprocSpecDir, procSpecDir)
