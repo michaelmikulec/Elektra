@@ -233,7 +233,7 @@ def train(modelName, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs):
 
 if __name__ == "__main__":
   dataDir     = "./data/training_data/eegs/"
-  modelDir    = "./models/dl/transformer/models/"
+  modelDir    = "./models/dl/transformer/"
   modelName   = "transformer.pth"
   modelPath   = os.path.join(modelDir, modelName)
   numPerClass = 600
