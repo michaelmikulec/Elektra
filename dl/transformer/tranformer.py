@@ -1,14 +1,12 @@
 import os
-import math
 import random
-import datetime
+import math
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import pandas as pd
 from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
-
 
 class SinusoidalPositionalEncoding(nn.Module):
   def __init__(self, d_model, max_len=10001):
@@ -139,65 +137,78 @@ def print_model_stats(model):
   print(f"Trainable parameters: {train_params}")
 
 
-def create_even_subset(dataset, samples_per_class):
-  class_indices = {}
-  for i in range(len(dataset)):
-    _, label = dataset[i]
-    label_value = label.item() if torch.is_tensor(label) else label
-    class_indices.setdefault(label_value, []).append(i)
-    
-  selected_indices = []
-  for indices in class_indices.values():
-    if len(indices) < samples_per_class:
-      selected_indices.extend(indices)
+def select_files_per_class(dataFiles, x):
+  groups = {}
+  for f in dataFiles:
+    base = os.path.basename(f)
+    label = base.split('_')[0]
+    groups.setdefault(label, []).append(f)
+  result = []
+  for files in groups.values():
+    if len(files) >= x:
+      result.extend(random.sample(files, x))
     else:
-      selected_indices.extend(random.sample(indices, samples_per_class))
+      result.extend(files)
+  return result
 
-  return Subset(dataset, selected_indices)
 
 def main():
-  dataDir = "./data/training_data/eegs/"
-  dataFiles = [os.path.join(dataDir, f) for f in os.listdir(dataDir) if f.endswith(".parquet")]
-  dataset = EEGDataset(dataFiles)
-  samples_per_class = 1000
-  even_dataset = create_even_subset(dataset, samples_per_class)
-  dataLoader = DataLoader(even_dataset, batch_size=128, shuffle=True, drop_last=False)
-  modelName = "./transformer.pth"
-  model = EEGTransformer()
-  device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-  model = model.to(device)
+  dataDir   = "./data/training_data/eegs/"
+  dataFiles = [
+    os.path.join(dataDir, f)
+    for f in os.listdir(dataDir)
+    if f.endswith(".parquet")
+  ]
+  subset = select_files_per_class(dataFiles,2000)
+  dataset    = EEGDataset(subset)
+  dataLoader = DataLoader(dataset, batch_size=128, shuffle=True, drop_last=False)
+
+  modelName  = "./transformer.pth"
+  model      = EEGTransformer()
+  device     = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+  model      = model.to(device)
+
   print_model_stats(model)
+
   if os.path.exists(modelName):
     print("Loading checkpoint from", modelName)
     model.load_state_dict(torch.load(modelName, map_location=device))
   else:
     print("No existing model found - initializing new model.")
-  opt = optim.Adam(model.parameters(), lr=1e-3)
-  crit = nn.CrossEntropyLoss()
+
+  opt    = optim.Adam(model.parameters(), lr=1e-3)
+  crit   = nn.CrossEntropyLoss()
   epochs = 5
+
   model.train()
   for ep in tqdm(range(epochs), desc="Training"):
     total_loss = 0.0
-    correct = 0
-    total = 0
+    correct    = 0
+    total      = 0
+
     for data, label in tqdm(dataLoader, desc=f"Epoch {ep+1}", leave=False):
       data, label = data.to(device), label.to(device)
+
       opt.zero_grad()
+
       output = model(data)
-      loss = crit(output, label)
+      loss   = crit(output, label)
+
       loss.backward()
       opt.step()
+
       total_loss += loss.item()
-      preds = output.argmax(dim=1)
-      correct += (preds == label).sum().item()
-      total += label.size(0)
+      preds      = output.argmax(dim=1)
+      correct    += (preds == label).sum().item()
+      total      += label.size(0)
+
       print(f"Batch Loss: {loss.item():.4f}", end="\r")
+
     avg_loss = total_loss / len(dataLoader) if len(dataLoader) > 0 else 0
-    acc = correct / total if total > 0 else 0
+    acc      = correct / total if total > 0 else 0
+
     print(f"Epoch {ep+1}/{epochs} | Loss: {avg_loss:.4f} | Acc: {acc:.4f}")
-    checkpoint_name = f"epoch_{ep+1} - {datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.pth"
-    torch.save(model.state_dict(), checkpoint_name)
-    print(f"Saved model checkpoint to {checkpoint_name}")
+
 
 if __name__ == "__main__":
   main()
