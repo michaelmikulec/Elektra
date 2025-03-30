@@ -25,6 +25,7 @@ class SinusoidalPositionalEncoding(nn.Module):
     x = x + self.pos_data[:, :seq_len, :]
     return x
 
+
 class LearnablePositionalEncoding(nn.Module):
   def __init__(self, d_model, max_len=10001):
     super().__init__()
@@ -37,31 +38,36 @@ class LearnablePositionalEncoding(nn.Module):
     x = x + self.pos_data[:, :seq_len, :]
     return x
 
+
 class EEGTransformer(nn.Module):
   def __init__(
     self,
-    input_dim=20,
-    model_dim=128,
-    num_heads=8,
-    num_layers=8,
-    dim_feedforward=256,
-    dropout=0.1,
-    num_classes=6,
-    max_len=10001,
-    use_learnable_pos_emb=True,
-    use_cls_token=True,
-    pooling="cls"
+    input_dim = 20,         
+    model_dim = 256,        
+    num_heads = 8,          
+    num_layers = 6,         
+    dim_feedforward = 1024, 
+    dropout = 0.1,
+    num_classes = 6,        
+    max_len = 10000,        
+    use_learnable_pos_emb = True,
+    use_cls_token = True,
+    pooling = "cls"         
   ):
     super().__init__()
-    self.use_cls_token  = use_cls_token
-    self.pooling        = pooling
+    self.use_cls_token = use_cls_token
+    self.pooling       = pooling
+
     if use_cls_token:
-      self.cls_token    = nn.Parameter(torch.zeros(1, 1, model_dim))
-    self.input_embed    = nn.Linear(input_dim, model_dim)
+      self.cls_token = nn.Parameter(torch.zeros(1, 1, model_dim))
+
+    self.input_embed = nn.Linear(input_dim, model_dim)
+
     if use_learnable_pos_emb:
       self.pos_encoding = LearnablePositionalEncoding(model_dim, max_len=max_len)
     else:
       self.pos_encoding = SinusoidalPositionalEncoding(model_dim, max_len=max_len)
+
     encoder_layer = nn.TransformerEncoderLayer(
       d_model=model_dim,
       nhead=num_heads,
@@ -87,17 +93,21 @@ class EEGTransformer(nn.Module):
   def forward(self, x):
     x = self.input_embed(x)
     if self.use_cls_token:
-      bsz = x.size(0)
+      bsz        = x.size(0)
       cls_tokens = self.cls_token.repeat(bsz, 1, 1)
-      x = torch.cat([cls_tokens, x], dim=1)
+      x          = torch.cat([cls_tokens, x], dim=1)
+
     x = self.pos_encoding(x)
     x = self.encoder(x)
+
     if self.use_cls_token and self.pooling == "cls":
       x = x[:, 0, :]
     else:
       x = x.mean(dim=1)
+
     x = self.classifier(x)
     return x
+
 
 class EEGDataset(Dataset):
   def __init__(self, file_paths, transform=None):
@@ -108,20 +118,23 @@ class EEGDataset(Dataset):
     return len(self.file_paths)
 
   def __getitem__(self, idx):
-    path  = self.file_paths[idx]
-    label = int(os.path.basename(path).split('_')[0])
-    df    = pd.read_parquet(path)
-    data  = torch.tensor(df.values, dtype=torch.float32)
+    path   = self.file_paths[idx]
+    label  = int(os.path.basename(path).split('_')[0])
+    df     = pd.read_parquet(path)
+    data   = torch.tensor(df.values, dtype=torch.float32)
     if self.transform:
       data = self.transform(data)
     return data, label
+
 
 def print_model_stats(model):
   print(model)
   total_params = sum(p.numel() for p in model.parameters())
   train_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+
   print(f"Total parameters: {total_params}")
   print(f"Trainable parameters: {train_params}")
+
 
 def main():
   dataDir   = "./data/training_data/eegs/"
@@ -130,13 +143,13 @@ def main():
     for f in os.listdir(dataDir)
     if f.endswith(".parquet")
   ]
-  dataset = EEGDataset(dataFiles)
+  dataset    = EEGDataset(dataFiles)
   dataLoader = DataLoader(dataset, batch_size=128, shuffle=True, drop_last=False)
 
-  modelName = "./transformer.pth"
-  model     = EEGTransformer()
-  device    = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-  model     = model.to(device)
+  modelName  = "./transformer.pth"
+  model      = EEGTransformer()
+  device     = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+  model      = model.to(device)
 
   print_model_stats(model)
 
@@ -160,6 +173,7 @@ def main():
       data, label = data.to(device), label.to(device)
 
       opt.zero_grad()
+
       output = model(data)
       loss   = crit(output, label)
 
@@ -175,7 +189,9 @@ def main():
 
     avg_loss = total_loss / len(dataLoader) if len(dataLoader) > 0 else 0
     acc      = correct / total if total > 0 else 0
+
     print(f"Epoch {ep+1}/{epochs} | Loss: {avg_loss:.4f} | Acc: {acc:.4f}")
+
 
 if __name__ == "__main__":
   main()
