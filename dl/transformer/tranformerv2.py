@@ -116,13 +116,11 @@ class EEGDataset(Dataset):
     return data, label
 
 if __name__ == "__main__":
-  dataFiles = [f for f in os.listdir("./data/training_data/eegs/") if f.endswith(".parquet")]
-  print(len(dataFiles))
-
+  dataDir = "./data/training_data/eegs/"
+  dataFiles = [os.path.join(dataDir, f) for f in os.listdir(dataDir) if f.endswith(".parquet")]
+  for f in dataFiles:
+    print(f)
   dataset = EEGDataset(dataFiles)
-  print(dataset.__len__)
-    
-
   dataLoader = DataLoader(dataset, batch_size=128, shuffle=True, drop_last=False)
 
   modelName = "./transformer.pth"
