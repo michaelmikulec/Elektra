@@ -64,9 +64,9 @@ def process_eeg_windows(eegs, unprocEEGDir: str, procEEGDir: str):
     id       = e[0]
     subID    = e[1]
     offset   = e[2]
-    labelID  = e[3]
-    intLabel = e[4]
-    srcPath = os.path.join(unprocEEGDir, f"{id}.parquet")
+    intLabel = e[3]
+    labelID  = e[4]
+    srcPath  = os.path.join(unprocEEGDir, f"{id}.parquet")
     if not os.path.isfile(srcPath):
       print(f"[WARNING] File not found: {srcPath}. Skipping.")
       continue
@@ -108,10 +108,10 @@ def process_eeg_windows(eegs, unprocEEGDir: str, procEEGDir: str):
       print(f"[WARNING] Suspicious large magnitude values in {srcPath}. Skipping.")
       continue
 
-    targetPath = os.path.join(procEEGDir, f"{intLabel}-{id}-{subID}-{labelID}.parquet")
+    targetPath = os.path.join(procEEGDir, f"{intLabel}_{labelID}_EEG-{id}-{subID}.parquet")
     try:
       window_df.to_parquet(targetPath)
-      print(f"[INFO] Wrote processed window to {targetPath}")
+      # print(f"[INFO] Wrote processed window to {targetPath}")
     except Exception as ex:
       print(f"[ERROR] Failed to write {targetPath}: {ex}.")
       continue
@@ -124,9 +124,9 @@ def process_spectrogram_windows(eegs, unprocSpecDir: str, procSpecDir: str):
     id       = s[0]
     subID    = s[1]
     offset   = s[2]
-    labelID  = s[3]
-    intLabel = s[4]
-    srcPath = os.path.join(unprocSpecDir, f"{id}.parquet")
+    intLabel = s[3]
+    labelID  = s[4]
+    srcPath  = os.path.join(unprocSpecDir, f"{id}.parquet")
     if not os.path.isfile(srcPath):
       print(f"[WARNING] File not found: {srcPath}. Skipping.")
       continue
@@ -167,17 +167,17 @@ def process_spectrogram_windows(eegs, unprocSpecDir: str, procSpecDir: str):
       print(f"[WARNING] Suspicious large magnitude values in {srcPath}. Skipping.")
       continue
 
-    targetPath = os.path.join(procSpecDir, f"{intLabel}-{id}-{subID}_{labelID}.parquet")
+    targetPath = os.path.join(procSpecDir, f"{intLabel}_{labelID}_SPEC-{id}-{subID}.parquet")
     try:
       window_df.to_parquet(targetPath)
-      print(f"[INFO] Wrote processed window to {targetPath}")
+      # print(f"[INFO] Wrote processed window to {targetPath}")
     except Exception as ex:
       print(f"[ERROR] Failed to write {targetPath}: {ex}.")
       continue
 
 
 if __name__ == "__main__":
-  labelMap:dict[str,int] = { "Seizure": 0, "LRDA": 1, "GRDA": 2, "LPD": 3, "GPD": 4, "Other": 5 };
+  labelMap = { "Seizure": 0, "LRDA": 1, "GRDA": 2, "LPD": 3, "GPD": 4, "Other": 5 };
   metadataPath:str = "./data/metadata.csv";
   eegs:List[Tuple]  = [];
   specs:List[Tuple] = [];
