@@ -153,18 +153,16 @@ def select_files_per_class(dataFiles, x):
   return result
 
 
-def main():
-  dataDir   = "./data/training_data/eegs/"
+def train(modelName, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs):
   dataFiles = [
     os.path.join(dataDir, f)
     for f in os.listdir(dataDir)
     if f.endswith(".parquet")
   ]
-  subset = select_files_per_class(dataFiles,200)
+  subset = select_files_per_class(dataFiles, numPerClass)
   dataset    = EEGDataset(subset)
-  dataLoader = DataLoader(dataset, batch_size=50, shuffle=True, drop_last=False)
+  dataLoader = DataLoader(dataset, batch_size=batchSize, shuffle=True, drop_last=False)
 
-  modelName  = "./dl/transformer/transformer.pth"
   model      = EEGTransformer()
   device     = torch.device("cuda" if torch.cuda.is_available() else "cpu")
   model      = model.to(device)
@@ -177,9 +175,9 @@ def main():
   else:
     print("No existing model found - initializing new model.")
 
-  opt    = optim.Adam(model.parameters(), lr=1e-4)
+  opt    = optim.Adam(model.parameters(), lr=lr)
   crit   = nn.CrossEntropyLoss()
-  epochs = 20
+  epochs = numEpochs
 
   model.train()
   for ep in tqdm(range(epochs), desc="Training"):
@@ -210,10 +208,18 @@ def main():
 
     print(f"Epoch {ep+1}/{epochs} | Loss: {avg_loss:.4f} | Acc: {acc:.4f}")
 
-    checkpoint_name = f"./dl/transformer/models/epoch_{ep+1}_acc_{acc:.3f}_loss_{avg_loss:.3f}.pth"
+    checkpoint_name = os.path.join(modelDir, f"E{ep+1}A{acc:.3f}L{avg_loss:.3f}.pth")
     torch.save(model.state_dict(), checkpoint_name)
     print(f"Saved model checkpoint to {checkpoint_name}")
 
 
 if __name__ == "__main__":
-  main()
+  dataDir   = "./data/training_data/eegs/"
+  modelDir = "./dl/transformer/models/"
+  modelName = "epoch_20_acc_0.878_loss_0.435.pth"
+  modelPath = os.path.join(modelDir, modelName)
+  numPerClass = 400
+  batchSize = 50
+  lr = 1e-4
+  numEpochs = 100
+  train(modelPath, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs)
