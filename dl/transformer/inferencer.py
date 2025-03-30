@@ -1,7 +1,7 @@
 import torch
 from torch.nn import DataParallel
 from torch.cuda.amp import autocast
-from model import EEGTransformer
+from dl.transformer.archive.model import EEGTransformer
 from config import model_config
 
 def infer(inputs, model_path):

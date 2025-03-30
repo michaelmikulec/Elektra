@@ -12,9 +12,6 @@ from torch.utils.data import DataLoader
 from torch.nn import DataParallel
 from torch.cuda.amp import autocast, GradScaler
 
-from model import EEGTransformer
-from dataset import EEGDataset, normalize_sample
-from config import dataset_config, training_config, model_config
 
 def train(dataset):
   start = time.time()
@@ -90,5 +87,4 @@ def train(dataset):
   print(f"Training time: {h:02d}:{m:02d}:{s:02d}")
 
 if __name__ == "__main__":
-  train(dataset = EEGDataset(dataset_config["training_data"], 1000))
-  
+  pass 
