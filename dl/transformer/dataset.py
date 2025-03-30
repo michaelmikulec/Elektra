@@ -44,3 +44,5 @@ class EEGDataset(Dataset):
 
 
 if __name__ == "__main__":
+  subset = select_subset("./data/training_data/eegs/", 1000)
+  print(subset)

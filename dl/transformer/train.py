@@ -16,9 +16,8 @@ from model import EEGTransformer
 from dataset import EEGDataset, normalize_sample
 from config import dataset_config, training_config, model_config
 
-def train():
+def train(dataset):
   start = time.time()
-  dataset = EEGDataset(dataset_config["training_data"], normalize_sample)
   loader = DataLoader(
     dataset,
     batch_size=training_config["batch_size"],
@@ -91,4 +90,5 @@ def train():
   print(f"Training time: {h:02d}:{m:02d}:{s:02d}")
 
 if __name__ == "__main__":
-  train()
+  train(dataset = EEGDataset(dataset_config["training_data"], 1000))
+  
