@@ -240,5 +240,7 @@ if __name__ == "__main__":
   batchSize   = 100
   lr          = 1e-4
   numEpochs   = 10
+  numTraining = 10
 
-  train(modelPath, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs)
+  for i in range(numTraining + 1):
+    train(modelPath, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs)
