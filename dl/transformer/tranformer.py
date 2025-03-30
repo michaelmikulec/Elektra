@@ -223,7 +223,7 @@ def train(modelName, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs):
     acc      = correct / total if total > 0 else 0
     print(f"Epoch {ep+1}/{epochs} | Loss: {avg_loss:.4f} | Acc: {acc:.4f}")
 
-    checkpoint_name = os.path.join(modelDir, f"E{ep+1}A{acc:.3f}L{avg_loss:.3f}.pth")
+    checkpoint_name = os.path.join(modelDir, f"checkpoints/E{ep+1}A{acc:.3f}L{avg_loss:.3f}.pth")
     torch.save(model.state_dict(), checkpoint_name)
     print(f"Saved model checkpoint to {checkpoint_name}")
 
