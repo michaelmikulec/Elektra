@@ -176,7 +176,7 @@ def train(modelName, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs):
     for f in os.listdir(dataDir)
     if f.endswith(".parquet")
   ]
-  subset = select_files_per_class(dataFiles, numPerClass)
+  subset     = select_files_per_class(dataFiles, numPerClass)
   dataset    = EEGDataset(subset)
   dataLoader = DataLoader(dataset, batch_size=batchSize, shuffle=True, drop_last=False)
   model      = EEGTransformer()
@@ -228,7 +228,7 @@ def train(modelName, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs):
 
   latestModel = ("./dl/transformer/transformer.pth")
   torch.save(model.state_dict(), latestModel)
-  print(f"Saved model checkpoint to {latestModel}")
+  print(f"Saved model to {latestModel}")
 
 if __name__ == "__main__":
   dataDir     = "./data/training_data/eegs/"
