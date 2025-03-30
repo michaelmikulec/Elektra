@@ -216,10 +216,10 @@ def train(modelName, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs):
 if __name__ == "__main__":
   dataDir   = "./data/training_data/eegs/"
   modelDir = "./dl/transformer/models/"
-  modelName = "epoch_20_acc_0.878_loss_0.435.pth"
+  modelName = "./dl/transformer/transformer1.0.pth"
   modelPath = os.path.join(modelDir, modelName)
-  numPerClass = 400
-  batchSize = 50
+  numPerClass = 600
+  batchSize = 100
   lr = 1e-4
-  numEpochs = 100
-  train(modelPath, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs)
+  numEpochs = 10
+  train(modelName, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs)
