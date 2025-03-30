@@ -2,7 +2,6 @@ import torch
 from torch.nn import DataParallel
 from torch.cuda.amp import autocast
 from dl.transformer.archive.model import EEGTransformer
-from config import model_config
 
 def infer(inputs, model_path):
   device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
