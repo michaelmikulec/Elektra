@@ -1,5 +1,9 @@
 import os
 import logging
+import glob
+import pandas as pd
+import matplotlib.pyplot as plt
+
 
 def create_logger(logging_level=logging.DEBUG):
   logger = logging.getLogger();
@@ -53,6 +57,28 @@ def build_workspace(logger=None) -> None:
       if logger: 
         logger.debug(f"Exists: {dir}");
 
+def plot_eeg_from_parquet(parquet_file):
+  df = pd.read_parquet(parquet_file)
+  time_axis = df.index
+  plt.figure(figsize=(14, 7))
+  for column in df.columns:
+    plt.plot(time_axis, df[column], label=column)
+  plt.title(f"EEG Data from {os.path.basename(parquet_file)}")
+  plt.xlabel("Time")
+  plt.ylabel("EEG Signal")
+  plt.legend(loc="best")
+  plt.tight_layout()
+  plt.show()
+
+def main():
+  data_dir = "./data/training_data/eegs"
+  parquet_files = glob.glob(os.path.join(data_dir, "*.parquet"))
+  if not parquet_files:
+    print("No parquet files found in", data_dir)
+    return
+  for parquet_file in parquet_files:
+    print(f"Plotting EEG data for {parquet_file}...")
+    plot_eeg_from_parquet(parquet_file)
+
 if __name__ == "__main__":
-  logger = create_logger(logging.DEBUG);
-  build_workspace(logger);
+    main()
