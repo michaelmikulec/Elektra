@@ -158,17 +158,19 @@ def main():
 
     for data, label in tqdm(dataLoader, desc=f"Epoch {ep+1}", leave=False):
       data, label = data.to(device), label.to(device)
+
       opt.zero_grad()
       output = model(data)
       loss   = crit(output, label)
+
       loss.backward()
       opt.step()
-      total_loss += loss.item()
-      preds   = output.argmax(dim=1)
-      correct += (preds == label).sum().item()
-      total   += label.size(0)
 
-      # Print the instantaneous loss
+      total_loss += loss.item()
+      preds      = output.argmax(dim=1)
+      correct    += (preds == label).sum().item()
+      total      += label.size(0)
+
       print(f"Batch Loss: {loss.item():.4f}", end="\r")
 
     avg_loss = total_loss / len(dataLoader) if len(dataLoader) > 0 else 0
