@@ -212,12 +212,14 @@ def train(modelName, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs):
     torch.save(model.state_dict(), checkpoint_name)
     print(f"Saved model checkpoint to {checkpoint_name}")
 
+  latestModel = ("./dl/transformer/transformer.pth")
+  torch.save(model.state_dict(), latestModel)
+  print(f"Saved model checkpoint to {latestModel}")
 
 if __name__ == "__main__":
   dataDir   = "./data/training_data/eegs/"
   modelDir = "./dl/transformer/models/"
-  modelName = "./dl/transformer/transformer1.0.pth"
-  modelPath = os.path.join(modelDir, modelName)
+  modelName = "./dl/transformer/transformer.pth"
   numPerClass = 600
   batchSize = 100
   lr = 1e-4
