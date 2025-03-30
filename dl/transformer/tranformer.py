@@ -1,5 +1,6 @@
 import os
 import random
+from datetime import datetime
 import math
 import torch
 import torch.nn as nn
@@ -159,11 +160,11 @@ def main():
     for f in os.listdir(dataDir)
     if f.endswith(".parquet")
   ]
-  subset = select_files_per_class(dataFiles,2000)
+  subset = select_files_per_class(dataFiles,200)
   dataset    = EEGDataset(subset)
-  dataLoader = DataLoader(dataset, batch_size=128, shuffle=True, drop_last=False)
+  dataLoader = DataLoader(dataset, batch_size=50, shuffle=True, drop_last=False)
 
-  modelName  = "./transformer.pth"
+  modelName  = "./dl/transformer/transformer.pth"
   model      = EEGTransformer()
   device     = torch.device("cuda" if torch.cuda.is_available() else "cpu")
   model      = model.to(device)
@@ -176,9 +177,9 @@ def main():
   else:
     print("No existing model found - initializing new model.")
 
-  opt    = optim.Adam(model.parameters(), lr=1e-3)
+  opt    = optim.Adam(model.parameters(), lr=1e-4)
   crit   = nn.CrossEntropyLoss()
-  epochs = 5
+  epochs = 20
 
   model.train()
   for ep in tqdm(range(epochs), desc="Training"):
@@ -202,12 +203,16 @@ def main():
       correct    += (preds == label).sum().item()
       total      += label.size(0)
 
-      print(f"Batch Loss: {loss.item():.4f}", end="\r")
+      print(f"\nBatch Loss: {loss.item():.4f}", end="\r")
 
     avg_loss = total_loss / len(dataLoader) if len(dataLoader) > 0 else 0
     acc      = correct / total if total > 0 else 0
 
     print(f"Epoch {ep+1}/{epochs} | Loss: {avg_loss:.4f} | Acc: {acc:.4f}")
+
+    checkpoint_name = f"./dl/transformer/models/epoch_{ep+1}_acc_{acc:.3f}_loss_{avg_loss:.3f}.pth"
+    torch.save(model.state_dict(), checkpoint_name)
+    print(f"Saved model checkpoint to {checkpoint_name}")
 
 
 if __name__ == "__main__":
