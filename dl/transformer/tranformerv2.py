@@ -108,13 +108,20 @@ class EEGDataset(Dataset):
     return len(self.file_paths)
 
   def __getitem__(self, idx):
-    path   = self.file_paths[idx]
-    label  = int(os.path.basename(path).split('_')[0])
-    df     = pd.read_parquet(path)
-    data   = torch.tensor(df.values, dtype=torch.float32)
+    path  = self.file_paths[idx]
+    label = int(os.path.basename(path).split('_')[0])
+    df    = pd.read_parquet(path)
+    data  = torch.tensor(df.values, dtype=torch.float32)
     if self.transform:
       data = self.transform(data)
     return data, label
+
+def print_model_stats(model):
+  print(model)
+  total_params = sum(p.numel() for p in model.parameters())
+  train_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+  print(f"Total parameters: {total_params}")
+  print(f"Trainable parameters: {train_params}")
 
 def main():
   dataDir   = "./data/training_data/eegs/"
@@ -130,6 +137,8 @@ def main():
   model     = EEGTransformer()
   device    = torch.device("cuda" if torch.cuda.is_available() else "cpu")
   model     = model.to(device)
+
+  print_model_stats(model)
 
   if os.path.exists(modelName):
     print("Loading checkpoint from", modelName)
@@ -149,23 +158,21 @@ def main():
 
     for data, label in tqdm(dataLoader, desc=f"Epoch {ep+1}", leave=False):
       data, label = data.to(device), label.to(device)
-
       opt.zero_grad()
-
       output = model(data)
       loss   = crit(output, label)
-
       loss.backward()
       opt.step()
-
       total_loss += loss.item()
-      preds      = output.argmax(dim=1)
-      correct    += (preds == label).sum().item()
-      total      += label.size(0)
+      preds   = output.argmax(dim=1)
+      correct += (preds == label).sum().item()
+      total   += label.size(0)
+
+      # Print the instantaneous loss
+      print(f"Batch Loss: {loss.item():.4f}", end="\r")
 
     avg_loss = total_loss / len(dataLoader) if len(dataLoader) > 0 else 0
     acc      = correct / total if total > 0 else 0
-
     print(f"Epoch {ep+1}/{epochs} | Loss: {avg_loss:.4f} | Acc: {acc:.4f}")
 
 if __name__ == "__main__":
