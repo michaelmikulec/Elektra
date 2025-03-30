@@ -9,6 +9,7 @@ import pandas as pd
 from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
 
+
 class SinusoidalPositionalEncoding(nn.Module):
   def __init__(self, d_model, max_len=10001):
     super().__init__()
@@ -226,17 +227,18 @@ def train(modelName, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs):
     torch.save(model.state_dict(), checkpoint_name)
     print(f"Saved model checkpoint to {checkpoint_name}")
 
-  latestModel = ("./dl/transformer/transformer.pth")
+  latestModel = ("./models/dl/transformer/transformer.pth")
   torch.save(model.state_dict(), latestModel)
   print(f"Saved model to {latestModel}")
 
 if __name__ == "__main__":
   dataDir     = "./data/training_data/eegs/"
-  modelDir    = "./dl/transformer/models/"
-  modelName   = "./dl/transformer/transformer.pth"
+  modelDir    = "./models/dl/transformer/models/"
+  modelName   = "transformer.pth"
+  modelPath   = os.path.join(modelDir, modelName)
   numPerClass = 600
   batchSize   = 100
   lr          = 1e-4
   numEpochs   = 10
 
-  train(modelName, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs)
+  train(modelPath, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs)
