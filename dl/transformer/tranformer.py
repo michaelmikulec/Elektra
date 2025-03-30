@@ -44,17 +44,17 @@ class LearnablePositionalEncoding(nn.Module):
 class EEGTransformer(nn.Module):
   def __init__(
     self,
-    input_dim = 20,         
-    model_dim = 256,        
-    num_heads = 8,          
-    num_layers = 6,         
-    dim_feedforward = 1024, 
-    dropout = 0.1,
-    num_classes = 6,        
-    max_len = 10000,        
+    input_dim             = 20,
+    model_dim             = 256,
+    num_heads             = 8,
+    num_layers            = 6,
+    dim_feedforward       = 1024,
+    dropout               = 0.1,
+    num_classes           = 6,
+    max_len               = 10000,
     use_learnable_pos_emb = True,
-    use_cls_token = True,
-    pooling = "cls"         
+    use_cls_token         = True,
+    pooling               = "cls"
   ):
     super().__init__()
     self.use_cls_token = use_cls_token
@@ -179,7 +179,6 @@ def train(modelName, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs):
   subset = select_files_per_class(dataFiles, numPerClass)
   dataset    = EEGDataset(subset)
   dataLoader = DataLoader(dataset, batch_size=batchSize, shuffle=True, drop_last=False)
-
   model      = EEGTransformer()
   device     = torch.device("cuda" if torch.cuda.is_available() else "cpu")
   model      = model.to(device)
@@ -217,12 +216,10 @@ def train(modelName, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs):
       preds      = output.argmax(dim=1)
       correct    += (preds == label).sum().item()
       total      += label.size(0)
-
       print(f"\nBatch Loss: {loss.item():.4f}", end="\r")
 
     avg_loss = total_loss / len(dataLoader) if len(dataLoader) > 0 else 0
     acc      = correct / total if total > 0 else 0
-
     print(f"Epoch {ep+1}/{epochs} | Loss: {avg_loss:.4f} | Acc: {acc:.4f}")
 
     checkpoint_name = os.path.join(modelDir, f"E{ep+1}A{acc:.3f}L{avg_loss:.3f}.pth")
@@ -234,11 +231,12 @@ def train(modelName, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs):
   print(f"Saved model checkpoint to {latestModel}")
 
 if __name__ == "__main__":
-  dataDir   = "./data/training_data/eegs/"
-  modelDir = "./dl/transformer/models/"
-  modelName = "./dl/transformer/transformer.pth"
+  dataDir     = "./data/training_data/eegs/"
+  modelDir    = "./dl/transformer/models/"
+  modelName   = "./dl/transformer/transformer.pth"
   numPerClass = 600
-  batchSize = 100
-  lr = 1e-4
-  numEpochs = 10
+  batchSize   = 100
+  lr          = 1e-4
+  numEpochs   = 10
+
   train(modelName, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs)
