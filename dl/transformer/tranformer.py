@@ -9,7 +9,10 @@ import torch.optim as optim
 from tqdm import tqdm
 from torch.utils.data import Dataset, DataLoader
 from torch.cuda.amp import autocast
-
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 class SinusoidalPositionalEncoding(nn.Module):
   def __init__(self, d_model, max_len=10001):
@@ -267,4 +270,4 @@ if __name__ == "__main__":
 
   # for i in range(numTraining + 1):
   #   train(modelPath, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs)
-  print(infer("./0_1000172375_EEG-2340401602-2.parquet", modelPath))
+  infer("./0_1000172375_EEG-2340401602-2.parquet", modelPath)
