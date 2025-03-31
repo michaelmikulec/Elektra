@@ -2,11 +2,13 @@ import os
 import random
 import math
 import torch
-import torch.nn as nn
-import torch.optim as optim
 import pandas as pd
-from torch.utils.data import Dataset, DataLoader
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
 from tqdm import tqdm
+from torch.utils.data import Dataset, DataLoader
+from torch.cuda.amp import autocast
 
 
 class SinusoidalPositionalEncoding(nn.Module):
@@ -59,17 +61,13 @@ class EEGTransformer(nn.Module):
     super().__init__()
     self.use_cls_token = use_cls_token
     self.pooling       = pooling
-
     if use_cls_token:
       self.cls_token = nn.Parameter(torch.zeros(1, 1, model_dim))
-
     self.input_embed = nn.Linear(input_dim, model_dim)
-
     if use_learnable_pos_emb:
       self.pos_encoding = LearnablePositionalEncoding(model_dim, max_len=max_len)
     else:
       self.pos_encoding = SinusoidalPositionalEncoding(model_dim, max_len=max_len)
-
     encoder_layer = nn.TransformerEncoderLayer(
       d_model=model_dim,
       nhead=num_heads,
@@ -133,7 +131,6 @@ def print_model_stats(model):
   print(model)
   total_params = sum(p.numel() for p in model.parameters())
   train_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-
   print(f"Total parameters: {total_params}")
   print(f"Trainable parameters: {train_params}")
 
@@ -153,21 +150,15 @@ def select_files_per_class(dataFiles, x):
   return result
 
 
-def infer(inputs, model_path):
-  device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-  model = EEGTransformer(**model_config)
-  if torch.cuda.device_count() > 1:
-    model = DataParallel(model)
-  model.to(device)
-  model.load_state_dict(torch.load(model_path, map_location=device))
-  model.eval()
-  if inputs.ndim == 2:
-    inputs = inputs.unsqueeze(0)
-  with torch.no_grad():
-    inputs = inputs.to(device)
-    with autocast():
-      outputs = model(inputs)
-    return outputs
+def load_model(model_path):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = EEGTransformer()
+    if torch.cuda.device_count() > 1:
+        model = DataParallel(model)
+    model.to(device)
+    model.load_state_dict(torch.load(model_path, map_location=device))
+    model.eval()
+    return model, device
 
 
 def train(modelName, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs):
@@ -230,6 +221,39 @@ def train(modelName, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs):
   torch.save(model.state_dict(), latestModel)
   print(f"Saved model to {latestModel}")
 
+
+def infer(input_data_or_path, model_path):
+  device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+  model = EEGTransformer()
+  if torch.cuda.device_count() > 1:
+      model = DataParallel(model)
+  model.load_state_dict(torch.load(model_path, map_location=device))
+  model.to(device)
+  model.eval()
+  if isinstance(input_data_or_path, str):
+    df = pd.read_parquet(input_data_or_path)
+    inputs = torch.tensor(df.values, dtype=torch.float32)
+  else:
+    inputs = input_data_or_path
+  if inputs.ndim == 2:
+    inputs = inputs.unsqueeze(0)
+  inputs = inputs.to(device)
+  with torch.no_grad():
+    with autocast():
+      logits = model(inputs)
+  probs = F.softmax(logits, dim=1)
+  confidence, pred_idx = torch.max(probs, dim=1)
+  label_map = {
+      0: "Seizure",
+      1: "LRDA",
+      2: "GRDA",
+      3: "LPD",
+      4: "GPD",
+      5: "Other"
+  }
+  print(f"Prediction: {label_map[pred_idx.item()]} with confidence {confidence.item():.2%}")
+
+
 if __name__ == "__main__":
   dataDir     = "./data/training_data/eegs/"
   modelDir    = "./models/dl/transformer/"
@@ -241,5 +265,6 @@ if __name__ == "__main__":
   numEpochs   = 10
   numTraining = 10
 
-  for i in range(numTraining + 1):
-    train(modelPath, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs)
+  # for i in range(numTraining + 1):
+  #   train(modelPath, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs)
+  print(infer("./0_1000172375_EEG-2340401602-2.parquet", modelPath))
