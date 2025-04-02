@@ -15,7 +15,7 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 class SinusoidalPositionalEncoding(nn.Module):
-  def __init__(self, d_model, max_len=10001):
+  def __init__(self, d_model, max_len=2001):
     super().__init__()
     pos_data          = torch.zeros(max_len, d_model)
     pos_range         = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
@@ -34,7 +34,7 @@ class SinusoidalPositionalEncoding(nn.Module):
 
 
 class LearnablePositionalEncoding(nn.Module):
-  def __init__(self, d_model, max_len=10001):
+  def __init__(self, d_model, max_len=2001):
     super().__init__()
     self.pos_data = nn.Parameter(torch.zeros(1, max_len, d_model))
   
@@ -44,7 +44,6 @@ class LearnablePositionalEncoding(nn.Module):
       raise ValueError(str(seq_len))
     x = x + self.pos_data[:, :seq_len, :]
     return x
-
 
 class EEGTransformer(nn.Module):
   def __init__(
@@ -270,4 +269,42 @@ if __name__ == "__main__":
 
   # for i in range(numTraining + 1):
   #   train(modelPath, modelDir,  dataDir, numPerClass, batchSize, lr, numEpochs)
-  infer("./0_1000172375_EEG-2340401602-2.parquet", modelPath)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  print("these two should be Seizure:")
+  infer("./0_1132121900_EEG-4010993438-7.parquet", modelPath)
+  infer("./0_12031182_EEG-4266393632-3.parquet", modelPath)
+
+  print("these two should be GRDA:")
+  infer("./2_644232451_EEG-852583442-67.parquet", modelPath)
+  infer("./2_644446039_EEG-852583442-10.parquet", modelPath)
+
+  print("these two should be LPD:")
+  infer("./3_207331724_EEG-3556046250-4.parquet", modelPath)
+  infer("./3_708361572_EEG-1353134161-2.parquet", modelPath)
+
+  print("these two should be GPD:")
+  infer("./4_3221007399_EEG-3232076969-4.parquet", modelPath)
+  infer("./4_609700825_EEG-1641054670-64.parquet", modelPath)
+
+  print("these two should be Other:")
+  infer("./5_979752000_EEG-1595550186-6.parquet", modelPath)
+  infer("./5_999516971_EEG-3580650910-9.parquet", modelPath)
+  
