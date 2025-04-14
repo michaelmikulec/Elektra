@@ -1,5 +1,7 @@
-data
-.venv
 *.pyc
 __pycache__
+.venv
+.vscode
+archive
+data
 checkpoints
