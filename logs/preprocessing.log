@@ -5,3 +5,95 @@
 [2025-04-13 20:08:59] Failed 1700214185: failed: NaNs found in tensor(s)
 [2025-04-13 20:08:59] Failed 1436645254: failed: NaNs found in tensor(s)
 [2025-04-13 20:08:59] Failed 2772427326: failed: NaNs found in tensor(s)
+[2025-04-13 20:33:29] Failed 2690857670: failed: NaNs found in tensor(s)
+[2025-04-13 20:50:04] Failed 4062091881: failed: NaNs found in tensor(s)
+[2025-04-13 20:50:05] Failed 478179165: failed: NaNs found in tensor(s)
+[2025-04-13 20:50:05] Failed 2380909638: failed: NaNs found in tensor(s)
+[2025-04-13 20:50:06] Failed 1965375012: failed: NaNs found in tensor(s)
+[2025-04-13 20:50:06] Failed 2283132019: failed: NaNs found in tensor(s)
+[2025-04-13 20:50:07] Failed 2361116046: failed: NaNs found in tensor(s)
+[2025-04-13 20:50:07] Failed 2664861148: failed: NaNs found in tensor(s)
+[2025-04-13 20:50:07] Failed 18660663: failed: NaNs found in tensor(s)
+[2025-04-13 20:50:11] Skipped 312017219: skipped: missing spectrogram
+[2025-04-13 20:50:12] Skipped 3014091980: skipped: missing spectrogram
+[2025-04-13 20:50:12] Skipped 1130944208: skipped: missing spectrogram
+[2025-04-13 20:50:12] Skipped 1070136299: skipped: missing spectrogram
+[2025-04-13 20:50:13] Skipped 303577541: skipped: missing spectrogram
+[2025-04-13 20:50:13] Skipped 4223108273: skipped: missing spectrogram
+[2025-04-13 20:50:13] Skipped 1366927915: skipped: missing spectrogram
+[2025-04-13 20:50:14] Skipped 1938800461: skipped: missing spectrogram
+[2025-04-13 20:50:14] Skipped 967778974: skipped: missing spectrogram
+[2025-04-13 20:50:14] Skipped 3757792639: skipped: missing spectrogram
+[2025-04-13 20:50:14] Skipped 1786695989: skipped: missing spectrogram
+[2025-04-13 20:50:15] Skipped 678944181: skipped: missing spectrogram
+[2025-04-13 20:50:15] Skipped 4263505133: skipped: missing spectrogram
+[2025-04-13 20:50:15] Skipped 1541361939: skipped: missing spectrogram
+[2025-04-13 20:50:16] Skipped 1491221693: skipped: missing spectrogram
+[2025-04-13 20:50:16] Skipped 1717773585: skipped: missing spectrogram
+[2025-04-13 20:50:16] Skipped 263272496: skipped: missing spectrogram
+[2025-04-13 20:50:17] Skipped 2401471586: skipped: missing spectrogram
+[2025-04-13 20:50:17] Skipped 1443392793: skipped: missing spectrogram
+[2025-04-13 20:50:17] Skipped 2349485217: skipped: missing spectrogram
+[2025-04-13 20:50:17] Skipped 2923290283: skipped: missing spectrogram
+[2025-04-13 20:50:18] Skipped 3070294290: skipped: missing spectrogram
+[2025-04-13 20:50:18] Skipped 1645708557: skipped: missing spectrogram
+[2025-04-13 20:50:18] Skipped 2506174270: skipped: missing spectrogram
+[2025-04-13 20:50:19] Skipped 2915141459: skipped: missing spectrogram
+[2025-04-13 20:50:19] Skipped 256160622: skipped: missing spectrogram
+[2025-04-13 20:50:19] Skipped 2237353155: skipped: missing spectrogram
+[2025-04-13 20:50:19] Skipped 511319564: skipped: missing spectrogram
+[2025-04-13 20:50:20] Skipped 1331483691: skipped: missing spectrogram
+[2025-04-13 20:50:20] Skipped 2285768300: skipped: missing spectrogram
+[2025-04-13 20:50:20] Skipped 4094152261: skipped: missing spectrogram
+[2025-04-13 20:50:21] Skipped 3334324110: skipped: missing spectrogram
+[2025-04-13 20:50:21] Skipped 3726220872: skipped: missing spectrogram
+[2025-04-13 20:50:21] Skipped 3664830249: skipped: missing spectrogram
+[2025-04-13 20:50:22] Skipped 824824656: skipped: missing spectrogram
+[2025-04-13 20:50:22] Skipped 4130237507: skipped: missing spectrogram
+[2025-04-13 20:50:22] Skipped 1780952537: skipped: missing spectrogram
+[2025-04-13 20:50:22] Skipped 3837384606: skipped: missing spectrogram
+[2025-04-13 20:50:23] Skipped 36986877: skipped: missing spectrogram
+[2025-04-13 20:50:23] Skipped 2070573422: skipped: missing spectrogram
+[2025-04-13 20:50:23] Skipped 710384805: skipped: missing spectrogram
+[2025-04-13 20:50:24] Skipped 3217144521: skipped: missing spectrogram
+[2025-04-13 20:50:24] Skipped 1651249681: skipped: missing spectrogram
+[2025-04-13 20:50:24] Skipped 4230056972: skipped: missing spectrogram
+[2025-04-13 20:50:25] Skipped 4048584182: skipped: missing spectrogram
+[2025-04-13 20:50:25] Skipped 2340875496: skipped: missing spectrogram
+[2025-04-13 20:50:25] Skipped 3485285772: skipped: missing spectrogram
+[2025-04-13 20:50:25] Skipped 3641736938: skipped: missing spectrogram
+[2025-04-13 20:50:26] Skipped 3229940266: skipped: missing spectrogram
+[2025-04-13 20:50:26] Skipped 2231408755: skipped: missing spectrogram
+[2025-04-13 20:50:26] Skipped 718672704: skipped: missing spectrogram
+[2025-04-13 20:50:27] Skipped 2629097006: skipped: missing spectrogram
+[2025-04-13 20:50:27] Skipped 1266547515: skipped: missing spectrogram
+[2025-04-13 20:50:27] Skipped 189905163: skipped: missing spectrogram
+[2025-04-13 20:50:28] Skipped 1828629334: skipped: missing spectrogram
+[2025-04-13 20:50:28] Skipped 57626156: skipped: missing spectrogram
+[2025-04-13 20:50:28] Skipped 1037849519: skipped: missing spectrogram
+[2025-04-13 20:50:29] Skipped 1890120287: skipped: missing spectrogram
+[2025-04-13 20:50:29] Skipped 2154262428: skipped: missing spectrogram
+[2025-04-13 20:50:29] Skipped 883578817: skipped: missing spectrogram
+[2025-04-13 20:50:29] Skipped 1657889906: skipped: missing spectrogram
+[2025-04-13 20:50:30] Skipped 1124997946: skipped: missing spectrogram
+[2025-04-13 21:37:36] Failed 625388282: failed: NaNs found in tensor(s)
+[2025-04-13 22:44:47] Failed 1550859933: failed: NaNs found in tensor(s)
+[2025-04-13 22:44:47] Failed 414130193: failed: NaNs found in tensor(s)
+[2025-04-13 22:44:48] Failed 921742004: failed: NaNs found in tensor(s)
+[2025-04-13 22:44:49] Failed 2803207077: failed: NaNs found in tensor(s)
+[2025-04-13 22:44:50] Failed 3766054821: failed: NaNs found in tensor(s)
+[2025-04-13 22:49:02] Failed 713604191: failed: NaNs found in tensor(s)
+[2025-04-13 22:49:02] Failed 1694892660: failed: NaNs found in tensor(s)
+[2025-04-13 22:49:03] Failed 1743939263: failed: NaNs found in tensor(s)
+[2025-04-13 22:49:04] Failed 3320955971: failed: NaNs found in tensor(s)
+[2025-04-13 22:57:25] Failed 17470487: failed: NaNs found in tensor(s)
+[2025-04-13 22:57:26] Failed 2657681807: failed: NaNs found in tensor(s)
+[2025-04-13 22:57:26] Failed 839521920: failed: NaNs found in tensor(s)
+[2025-04-13 22:57:27] Failed 1462932883: failed: NaNs found in tensor(s)
+[2025-04-13 22:57:28] Failed 3717312849: failed: NaNs found in tensor(s)
+[2025-04-13 22:57:29] Failed 2196981498: failed: NaNs found in tensor(s)
+[2025-04-13 22:57:29] Failed 1589244780: failed: NaNs found in tensor(s)
+[2025-04-13 22:57:30] Failed 1240205913: failed: NaNs found in tensor(s)
+[2025-04-13 22:57:31] Failed 1301467862: failed: NaNs found in tensor(s)
+[2025-04-13 22:57:32] Failed 1832255133: failed: NaNs found in tensor(s)
+[2025-04-13 22:57:32] Failed 2444635466: failed: NaNs found in tensor(s)
