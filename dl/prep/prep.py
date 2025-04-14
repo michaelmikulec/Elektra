@@ -6,13 +6,13 @@ import pyarrow.parquet as pq
 from tqdm import tqdm
 from datetime import datetime
 
-METADATA_PATH    = "data/raw/metadata.csv"
-EEG_DIR          = "data/raw/train_eegs"
-SPEC_DIR         = "data/raw/train_spectrograms"
-OUTPUT_DIR       = "data/preproc"
-INDEX_CSV        = "data/preprocessing_index.csv"
-LOG_FILE         = "logs/preprocessing.log"
-RESUME           = True
+METADATA_PATH = "data/raw/metadata.csv"
+EEG_DIR       = "data/raw/eegs"
+SPEC_DIR      = "data/raw/specs"
+OUTPUT_DIR    = "data/prep"
+INDEX_CSV     = "data/pidx.csv"
+LOG_FILE      = "logs/prep.log"
+RESUME        = True
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)

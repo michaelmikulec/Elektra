@@ -7,7 +7,7 @@ from torch.optim import Adam
 from tqdm import trange, tqdm
 from sklearn.metrics import accuracy_score, roc_auc_score
 
-from dl.dataHandler.dataHandler import getDataloader
+from dl.dh.dh import getDataloader
 from dl.cnn.cnn import SpectrogramCNN
 
 def train(

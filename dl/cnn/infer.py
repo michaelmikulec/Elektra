@@ -4,7 +4,7 @@ import pyarrow.parquet as pq
 from datetime import datetime
 
 from dl.cnn.cnn import SpectrogramCNN
-from preproc import get_spec_event_window
+from prep import get_spec_event_window
 
 def infer(
   parquet_path,

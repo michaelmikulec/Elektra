@@ -3,8 +3,8 @@ import torch
 import pyarrow.parquet as pq
 from datetime import datetime
 
-from dl.transformer.transformer import EEGTransformer
-from preproc.preproc import get_eeg_event_window
+from dl.tf.tf import EEGTransformer
+from dl.prep.prep import get_eeg_event_window
 
 def infer(
   parquet_path,

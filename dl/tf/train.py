@@ -7,8 +7,8 @@ from torch.optim import Adam
 from tqdm import trange, tqdm
 from sklearn.metrics import accuracy_score, roc_auc_score
 
-from dl.dataHandler.dataHandler import getDataloader
-from dl.transformer.transformer import EEGTransformer
+from dl.dh.dh import getDataloader
+from dl.tf.tf import EEGTransformer
 
 def train(
   index_csv    = "data/preprocessing_index.csv",
