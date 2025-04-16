@@ -1,10 +1,26 @@
+# import os
+# import tkinter as tk
+# from tkinter import ttk, filedialog, messagebox
+# import pandas as pd
+# import matplotlib
+# import matplotlib.pyplot as plt
+# from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+# from ml import random_forest_inference
+
+import sys
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from ml import random_forest_inference
+
+
+matplotlib.use("TkAgg")
+
 
 
 matplotlib.use("TkAgg")
@@ -162,23 +178,23 @@ class ElektraApp:
       messagebox.showwarning("No File", "Please upload an EEG file first.")
       return
 
-    # model_type = self.selected_model.get()
-    # if model_type == "Random Forest":
-    #     result, accuracy, confidence = random_forest_inference(self.eeg_file_path)
-    # elif model_type == "Transformer":
-    #     result, accuracy, confidence = infer(self.eeg_file_path)
-    # elif model_type == "CNN":
-    #     result, accuracy, confidence = cnn_inference(self.eeg_file_path)
+    model_type = self.selected_model.get()
 
-    # Mock results
-    result = "Potentially Harmful" if model_type == "Random Forest" else "Normal"
-    accuracy = 0.95
-    confidence = 0.88
+    try:
+      if model_type == "Random Forest":
+        result, accuracy, confidence = random_forest_inference(self.eeg_file_path)
+      else:
+        result, accuracy, confidence = "Coming Soon", 0.0, 0.0
 
-    # Update labels
-    self.inference_result_label.config(text=f"Inference Result: {result}")
-    self.model_accuracy_label.config(text=f"Model Accuracy: {accuracy:.2f}")
-    self.model_confidence_label.config(text=f"Confidence: {confidence:.2f}")
+      self.inference_result_label.config(text=f"Inference Result: {result}")
+      self.model_accuracy_label.config(text=f"Model Accuracy: {accuracy:.2f}")
+      self.model_confidence_label.config(text=f"Confidence: {confidence:.2f}")
+
+    except Exception as e:
+      messagebox.showerror("Error", f"Failed to run inference:\n{e}")
+
+
+    
 
 def main():
   root = tk.Tk()

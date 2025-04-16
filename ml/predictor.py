@@ -1,29 +1,19 @@
-# rf_model/predictor.py
-
-import os
+# inference_random_forest.py
 import pandas as pd
 import numpy as np
-import joblib
-import mne
 from scipy.signal import butter, filtfilt, iirnotch
 from scipy.stats import skew, kurtosis
-import warnings
-from tqdm import tqdm
-
-from .config import config
-
-# Suppress logs
-mne.set_log_level("WARNING")
-warnings.filterwarnings("ignore", category=UserWarning)
-warnings.filterwarnings("ignore", category=RuntimeWarning)
-warnings.filterwarnings("ignore", category=FutureWarning)
+import joblib
+import mne
 
 FS = 200
 
+MODEL_PATH = "C:/Users/Kevin Tran/Documents/Project Data/random_forest_eeg_model_flat.pkl"
+ENCODER_PATH = "C:/Users/Kevin Tran/Documents/Project Data/label_encoder_flat.pkl"
+
 BANDS = {
     "delta": (1, 3), "theta": (4, 7), "alpha1": (8, 9), "alpha2": (10, 12),
-    "beta1": (13, 17), "beta2": (18, 30), "gamma1": (31, 40),
-    "gamma2": (41, 50), "higher": (51, 100)
+    "beta1": (13, 17), "beta2": (18, 30), "gamma1": (31, 40), "gamma2": (41, 50)
 }
 
 def apply_notch_filter(signal):
@@ -86,51 +76,32 @@ def extract_flattened_features(df):
             all_feats[f"{ch}_{k}"] = v
     return pd.DataFrame([all_feats])
 
-def predict_eeg_files(input_dir=None, output_csv=None):
-    input_dir = input_dir or config["input_dir"]
-    output_csv = output_csv or config["output_csv"]
+# Load model + encoder once
+model = joblib.load(MODEL_PATH)
+encoder = joblib.load(ENCODER_PATH)
 
-    model = joblib.load(config["model_path"])
-    encoder = joblib.load(config["encoder_path"])
+def random_forest_inference(file_path):
+    df = pd.read_parquet(file_path)
 
-    all_files = sorted([
-        f for f in os.listdir(input_dir)
-        if f.endswith(".parquet") and not f.startswith("~") and not f.startswith(".")
-    ])
-    print(f"📂 Found {len(all_files)} valid EEG files to process.\n")
+    if "EKG" in df.columns:
+        df = df.drop(columns=["EKG"])
+    if len(df) < 30 * FS:
+        raise ValueError("File too short")
 
-    results = []
-    for fname in tqdm(all_files, desc="Predicting"):
-        fpath = os.path.join(input_dir, fname)
-        try:
-            df = pd.read_parquet(fpath)
-            if "EKG" in df.columns:
-                df = df.drop(columns=["EKG"])
-            if len(df) < 30 * FS:
-                print(f"⚠️ Skipping {fname}: too short")
-                continue
+    segment = df.iloc[20 * FS:30 * FS].copy()
+    for ch in segment.columns:
+        segment[ch] = normalize_signal(apply_bandpass_filter(apply_notch_filter(segment[ch].values)))
+    segment = apply_ica(segment)
 
-            segment = df.iloc[20 * FS: 30 * FS].copy()
-            for ch in segment.columns:
-                segment[ch] = normalize_signal(apply_bandpass_filter(apply_notch_filter(segment[ch].values)))
-            segment = apply_ica(segment)
+    features = extract_flattened_features(segment)
+    for col in model.feature_names_in_:
+        if col not in features.columns:
+            features[col] = 0.0
+    features = features[model.feature_names_in_]
 
-            features = extract_flattened_features(segment)
-            for col in model.feature_names_in_:
-                if col not in features.columns:
-                    features[col] = 0.0
-            features = features[model.feature_names_in_]
+    pred = model.predict(features)[0]
+    prob = model.predict_proba(features)[0]
+    confidence = max(prob)
+    label = encoder.inverse_transform([pred])[0]
 
-            pred = model.predict(features)[0]
-            label = encoder.inverse_transform([pred])[0]
-
-            print(f"🧠 {fname} → Predicted: {label}")
-            results.append({"eeg_file": fname, "prediction": label})
-        except Exception as e:
-            print(f"❌ Error processing {fname}: {e}")
-            results.append({"eeg_file": fname, "prediction": "Error"})
-
-    results_df = pd.DataFrame(results)
-    results_df.to_csv(output_csv, index=False)
-    print(f"\n✅ All predictions saved to: {output_csv}")
-    return results_df
+    return label, model.score(features, [pred]), confidence
