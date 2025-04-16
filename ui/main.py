@@ -1,12 +1,3 @@
-# import os
-# import tkinter as tk
-# from tkinter import ttk, filedialog, messagebox
-# import pandas as pd
-# import matplotlib
-# import matplotlib.pyplot as plt
-# from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-# from ml import random_forest_inference
-
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
