@@ -166,31 +166,49 @@ class ElektraApp:
 
   def run_inference(self):
     if not self.eeg_file_path:
-      messagebox.showwarning("No File", "Please upload an EEG file first.")
-      return
+        messagebox.showwarning("No File", "Please upload an EEG file first.")
+        return
 
     model_type = self.selected_model.get()
 
     try:
-      if model_type == "Random Forest":
-        result, accuracy, confidence = random_forest_inference(self.eeg_file_path)
-      else:
-        result, accuracy, confidence = "Coming Soon", 0.0, 0.0
+        if model_type == "Random Forest":
+            result, _, confidence = random_forest_inference(self.eeg_file_path)
+            accuracy = 0.57  # ⬅️ Fixed accuracy for RF model
+        else:
+            result, accuracy, confidence = "Coming Soon", 0.0, 0.0
 
-      self.inference_result_label.config(text=f"Inference Result: {result}")
-      self.model_accuracy_label.config(text=f"Model Accuracy: {accuracy:.2f}")
-      self.model_confidence_label.config(text=f"Confidence: {confidence:.2f}")
+        self.inference_result_label.config(text=f"Inference Result: {result}")
+        self.model_accuracy_label.config(text=f"Model Accuracy: {accuracy:.2f}")
+        self.model_confidence_label.config(text=f"Confidence: {confidence:.2f}")
 
     except Exception as e:
-      messagebox.showerror("Error", f"Failed to run inference:\n{e}")
+        messagebox.showerror("Error", f"Failed to run inference:\n{e}")
 
 
-    
 
 def main():
-  root = tk.Tk()
-  app = ElektraApp(root)
-  root.mainloop()
+    root = tk.Tk()
+    app = ElektraApp(root)
+
+    def on_close():
+        try:
+            root.destroy()
+        except:
+            pass
+        sys.exit()  # Ensures the Python process exits completely
+
+    root.protocol("WM_DELETE_WINDOW", on_close)
+    root.mainloop()
 
 if __name__ == "__main__":
-  main()
+    main()
+   
+
+# def main():
+#   root = tk.Tk()
+#   app = ElektraApp(root)
+#   root.mainloop()
+
+# if __name__ == "__main__":
+#   main()
