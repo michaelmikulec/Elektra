@@ -12,10 +12,6 @@ from ml import random_forest_inference
 
 matplotlib.use("TkAgg")
 
-
-
-matplotlib.use("TkAgg")
-
 class ElektraApp:
   def __init__(self, master):
     self.master = master
@@ -30,6 +26,8 @@ class ElektraApp:
 
     self.create_widgets()
     self.create_plots()
+  
+  
 
   def create_widgets(self):
     # Frame for top controls
@@ -139,6 +137,7 @@ class ElektraApp:
       self.eeg_file_path = file_path
       messagebox.showinfo("File Uploaded", f"EEG file selected:\n{file_path}")
       self.plot_eeg_data(file_path)
+
 
   def plot_eeg_data(self, file_path):
     # Clear existing plots
