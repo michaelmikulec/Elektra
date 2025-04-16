@@ -1,53 +1,31 @@
 import os
 
 dirs = [
-  "data",
-    #data/preprocessing_index.csv
-    "data/preproc",
-    "data/raw",
-      #data/raw/metadata.csv
-      "data/raw/train_eegs",
-      "data/raw/train_spectrograms",
+#"main.py",
+  "data/",
+    #data/pidx.csv
+    "data/prep/",
+    "data/raw/",
+      #data/raw/train.csv
+      "data/raw/train_eegs/",
+      "data/raw/train_spectrograms/",
 
-  "dl",
-    "dl/cnn",
+  "dl/",
+    "dl/cnn/",
       #dl/cnn/__init__.py
       #dl/cnn/cnn.py
-      #dl/cnn/infer.py
-      #dl/cnn/train.py
-    "dl/dataHandler",
-      #dl/dataHandler/__init__.py
-      #dl/dataHandler/dataHandler.py
-    "dl/transformer",
-      #dl/transformer/__init__.py
-      #dl/transformer/infer.py
-      #dl/transformer/train.py
-      #dl/transformer/tranformer.py
+    "dl/dh/",
+      #dl/dh/__init__.py
+      #dl/dh/dh.py
+    "dl/prep/",
+      #dl/prep/__init__.py
+      #dl/prep/prep.py
+      #dl/prep/prep_summary.txt
+    "dl/tf/",
+      #dl/tf/__init__.py
+      #dl/tf/tf.py
 
-  "logs",
-    "logs/preproc",
-      #logs/preprocessing.log
-    "logs/dl",
-      "logs/dl/transformer",
-        #logs/dl/transformer/training.log
-        #logs/dl/transformer/inference.log
-      "logs/dl/cnn",
-        #logs/dl/cnn/training.log
-        #logs/dl/cnn/inference.log
-
-  "ml",
-
-  "models",
-    "models/dl",
-      "models/dl/transformer",
-        #models/dl/transformer/tranformer.pt
-      "models/dl/cnn",
-        #models/dl/cnn/cnn.pt
-    "models/ml",
-      "models/ml/randomForest",
-        #models/ml/randomForest/randomForest.pt
-
-  "ui"
+  "ml/",
 ]
 
 for dir in dirs:
