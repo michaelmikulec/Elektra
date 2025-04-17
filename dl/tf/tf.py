@@ -9,7 +9,6 @@ import torch.nn as nn
 from torch.optim import Adam
 from tqdm import trange, tqdm
 from sklearn.metrics import accuracy_score, roc_auc_score
-
 from dl.dh.dh import getDataloader
 from dl.prep.prep import get_eeg_event_window
 
@@ -60,18 +59,19 @@ class EEGTransformer(nn.Module):
 
 
 def train(
-  index_csv    = "data/pidx.csv",
-  data_dir     = "data/prep",
-  batch_size   = 8,
-  num_samples  = 200,
-  num_epochs   = 1,
-  lr           = 1e-4,
-  val_split    = 0.2,
-  save_dir     = "dl/tf/models",
-  log_file     = "dl/tf/logs/training.log",
-  metrics_out  = "dl/tf/logs/training_metrics.parquet"
+  index_csv       = "data/pidx.csv",
+  data_dir        = "data/prep",
+  batch_size      = 1,
+  num_samples     = 600,
+  num_epochs      = 10,
+  lr              = 1e-4,
+  val_split       = 0.2,
+  save_dir        = "dl/tf/models",
+  log_file        = "dl/tf/logs/training.log",
+  metrics_out     = "dl/tf/logs/training_metrics.parquet",
+  resume_training = False
 ):
-  device       = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+  device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
   os.makedirs(save_dir, exist_ok=True)
   os.makedirs(os.path.dirname(log_file), exist_ok=True)
@@ -93,17 +93,16 @@ def train(
   latest_model_path = None
   latest_epoch      = 0
 
-  for fname in sorted(os.listdir(save_dir)):
-    if fname.startswith("model_epoch") and fname.endswith(".pt"):
-      epoch_num     = int(fname.split("epoch")[-1].split(".pt")[0])
-
-      if epoch_num > latest_epoch:
-        latest_epoch      = epoch_num
-        latest_model_path = os.path.join(save_dir, fname)
-
-  if latest_model_path:
-    print(f"Resuming from {latest_model_path}")
-    model.load_state_dict(torch.load(latest_model_path))
+  if resume_training:
+    for fname in sorted(os.listdir(save_dir)):
+      if fname.startswith("model_epoch") and fname.endswith(".pt"):
+        epoch_num     = int(fname.split("epoch")[-1].split(".pt")[0])
+        if epoch_num > latest_epoch:
+          latest_epoch      = epoch_num
+          latest_model_path = os.path.join(save_dir, fname)
+    if latest_model_path:
+      print(f"Resuming from {latest_model_path}")
+      model.load_state_dict(torch.load(latest_model_path))
 
   model.train()
   for epoch in trange(latest_epoch, latest_epoch + num_epochs, desc="Epochs"):

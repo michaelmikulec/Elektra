@@ -1,0 +1,9 @@
+
+===== Preprocessing Summary (2025-04-17 00:06:28) =====
+Total metadata rows: 106800
+Saved successfully:  106711
+Skipped (missing):   0
+Failed (errors):     89
+Index saved:         data/pidx.csv
+Resume mode:         True
+============================================================

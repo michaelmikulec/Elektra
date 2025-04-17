@@ -52,10 +52,8 @@ def get_eeg_event_window(eeg_df, offset_sec):
   start = int((offset_sec + 20) * 200)
   end   = start + 2000
   data  = eeg_df.iloc[start:end].values.astype("float32")
-
   if data.shape != (2000, 20):
     raise ValueError()
-
   return torch.tensor(vectorized_fill_and_standardize(data))
 
 def get_spec_event_window(spec_df, offset_sec):
@@ -64,10 +62,8 @@ def get_spec_event_window(spec_df, offset_sec):
   start     = center - 2
   end       = center + 3
   data      = spec_data[start:end]
-
   if data.shape != (5, 400): 
     raise ValueError()
-
   return torch.tensor(vectorized_fill_and_standardize(data))
 
 def extract_soft_labels(r):
