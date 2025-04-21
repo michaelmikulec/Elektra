@@ -27,7 +27,6 @@ class ElektraApp:
     self.create_widgets()
     self.create_plots()
   
-  
 
   def create_widgets(self):
     # Frame for top controls
