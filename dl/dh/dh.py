@@ -1,54 +1,23 @@
-import os
-import torch
-import pandas as pd
+import os, torch, pandas as pd
 from torch.utils.data import Dataset, DataLoader
 
-def getDataloader(
-  index_csv,
-  data_dir,
-  num_samples = 60,
-  batch_size  = 32,
-  shuffle     = True,
-  num_workers = 1,
-  label_col   = "expert_consensus"
-):
-  class EEGDataset(Dataset):
-    def __init__(self, df, data_dir):
-      self.df       = df
-      self.data_dir = data_dir
+class EEGDataset(Dataset):
+  def __init__(self, folder, classes):
+    self.files   = [f for f in os.listdir(folder) if f.endswith('.parquet')]
+    self.folder  = folder
+    self.cls2idx = {c:i for i,c in enumerate(classes)}
 
-    def __len__(self):
-      return len(self.df)
+  def __len__(self):
+    return len(self.files)
 
-    def __getitem__(self, idx):
-      row    = self.df.iloc[idx]
-      sample = torch.load(os.path.join(self.data_dir, row["filename"]))
-      return sample["eeg"], sample["spectrogram"], sample["label"]
+  def __getitem__(self, idx):
+    fn        = self.files[idx]
+    label_str = fn.split('_')[-1].split('.')[0]
+    label_idx = self.cls2idx[label_str]
+    df        = pd.read_parquet(os.path.join(self.folder, fn))
+    data      = torch.from_numpy(df.values).float()
+    return data, torch.tensor(label_idx).long()
 
-  df = pd.read_csv(index_csv)
-  df = df[df["status"] == "success"]
-
-  if df.empty:
-    raise ValueError("No rows with status == 'success'.")
-
-  classes          = df[label_col].unique()
-  num_classes      = len(classes)
-  base             = num_samples // num_classes
-  remainder        = num_samples % num_classes
-  per_class_counts = {label: base + (1 if i < remainder else 0) for i, label in enumerate(classes)}
-  samples          = []
-
-  for label in classes:
-    group = df[df[label_col] == label]
-    count = per_class_counts[label]
-    n     = min(len(group), count)
-
-    if n < count:
-      print(f"Not enough samples for label '{label}', using {n} instead of {count}")
-
-    samples.append(group.sample(n=n, random_state=42))
-
-  subset_df = pd.concat(samples).reset_index(drop=True)
-  dataset   = EEGDataset(subset_df, data_dir)
-
-  return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers)
+ds = EEGDataset('data/prep/eegs', ['seizure', 'lpd', 'gpd', 'lrda', 'grda', 'other'])
+dl = DataLoader(ds, batch_size=16, shuffle=True, num_workers=16, pin_memory=True)
+print(len(dl))
