@@ -71,7 +71,4 @@ def prep(metadataPath:str="data/train.csv", startRow:int=0, endRow:int=1086):
       print(f"Error processing {eeg_id}: {e}")
       continue
 
-
-df = pd.read_parquet("data/prep/eegs/EEG_1000898569_seizure.parquet")
-spectrograms, f, t = df_to_spectrograms(df, fs=200, win_len=64, hop_len=32, n_fft=None, to_db=True)
-print(type(spectrograms))
+prep("data/train.csv", 0, -1)
