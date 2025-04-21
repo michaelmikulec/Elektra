@@ -26,8 +26,6 @@ class ElektraApp:
     self.create_widgets()
     self.create_plots()
   
-  
-
   def create_widgets(self):
     # Frame for top controls
     top_frame = tk.Frame(self.master)
@@ -137,7 +135,6 @@ class ElektraApp:
       messagebox.showinfo("File Uploaded", f"EEG file selected:\n{file_path}")
       self.plot_eeg_data(file_path)
 
-
   def plot_eeg_data(self, file_path):
     # Clear existing plots
     self.ax_eeg.clear()
@@ -182,8 +179,6 @@ class ElektraApp:
 
     except Exception as e:
         messagebox.showerror("Error", f"Failed to run inference:\n{e}")
-
-
 
 def main():
     root = tk.Tk()
