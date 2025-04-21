@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from scipy.signal import iirnotch, filtfilt, stft
 
 def apply_notch_filter(
@@ -71,3 +70,8 @@ def prep(metadataPath:str="data/train.csv", startRow:int=0, endRow:int=1086):
     except Exception as e:
       print(f"Error processing {eeg_id}: {e}")
       continue
+
+
+df = pd.read_parquet("data/prep/eegs/EEG_1000898569_seizure.parquet")
+spectrograms, f, t = df_to_spectrograms(df, fs=200, win_len=64, hop_len=32, n_fft=None, to_db=True)
+print(type(spectrograms))

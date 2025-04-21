@@ -1,5 +1,6 @@
 # Elektra: Harmful Brain Activity Classifier
-* Classifies input EEG datasets into one of 6 categories:
+## Objective
+* Classify input EEG datasets into one of 6 categories:
   1. Seizure
   2. LPD 
   3. GPD
@@ -7,8 +8,9 @@
   5. GRDA
   6. Other
 
+## Features
 * Contains 3 learning models:
-  1. [type] machine learning model
+  1. Random Forest machine learning model
   2. Transformer deep learning model
   3. CNN deep learning model
 
@@ -32,6 +34,8 @@
   * display confidence of inference
 
 ## Machine Learning Module
+### Random Forest Model
+
 ## Deep Learning Module
 ### Transformer Model
 ### CNN Model
