@@ -3,6 +3,7 @@
 archive
 checkpoints
 data
+eegs
 models
 *.pyc
 __pycache__

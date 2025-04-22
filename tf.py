@@ -9,8 +9,8 @@ class EEGTransformer(nn.Module):
   def __init__(
     self,
     n_channels   = 19,
-    d_model      = 128,
-    n_heads      = 8,
+    d_model      = 256,
+    n_heads      = 16,
     n_layers     = 6,
     d_ff         = 512,
     dropout      = 0.1,
@@ -123,13 +123,13 @@ if __name__ == '__main__':
 
   print("Splitting data into train, val, and test sets...")
   train_ds, val_ds, test_ds = random_split(dataset, [trainn, valn, testn])
-  train_dl = DataLoader(train_ds, batch_size=256, shuffle=True,  num_workers=16, pin_memory=True)
-  val_dl   = DataLoader(val_ds,   batch_size=256, shuffle=False, num_workers=16, pin_memory=True)
-  test_dl  = DataLoader(test_ds,  batch_size=256, shuffle=False, num_workers=16, pin_memory=True)
+  train_dl = DataLoader(train_ds, batch_size=128, shuffle=True,  num_workers=16, pin_memory=True)
+  val_dl   = DataLoader(val_ds,   batch_size=128, shuffle=False, num_workers=16, pin_memory=True)
+  test_dl  = DataLoader(test_ds,  batch_size=128, shuffle=False, num_workers=16, pin_memory=True)
   device   = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
   model    = EEGTransformer()
   opt      = torch.optim.AdamW(model.parameters(), lr=1e-4)
   crit     = torch.nn.CrossEntropyLoss()
-  epochs   = 50
-  ckptPath = 'checkpoint.pth'
+  epochs   = 100
+  ckptPath = 't4.pth'
   train_losses, val_losses, val_accs = train(model, train_dl, val_dl, opt, crit, device, epochs=epochs, ckptPath=ckptPath)
