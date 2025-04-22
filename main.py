@@ -73,6 +73,10 @@ class ElektraApp:
       if model_type == "Random Forest":
         result, _, confidence = random_forest_inference(self.eegFilePath)
         accuracy = 0.57  # ⬅️ Fixed accuracy for RF model
+      if model_type == "Transformer":
+        result, accuracy, confidence = infer_transformer(self.eegFilePath)
+      if model_type == "CNN":
+        result, accuracy, confidence = infer_cnn(self.eegFilePath)
       else:
         result, accuracy, confidence = "Coming Soon", 0.0, 0.0
       self.inferenceResultLabel.config(text=f"Inference Result: {result}")
