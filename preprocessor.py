@@ -62,7 +62,7 @@ def remove_bad_parquets(folder, log_path) -> None:
     for fname in bad:
       w.write(fname + '\n')
 
-def df_to_spectrograms(df, fs=200, win_len=256, hop_len=128, n_fft=None, window='hann', to_db=True, fmin=None, fmax=None):
+def df_to_spectrograms(df, fs=200, win_len=128, hop_len=64, n_fft=None, window='hann', to_db=True, fmin=None, fmax=None):
   channel_names = list(df.columns)
   if n_fft is None:
     n_fft = win_len
