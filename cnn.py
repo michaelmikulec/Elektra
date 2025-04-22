@@ -5,6 +5,31 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader, random_split
 
+# class SpectrogramCNN(nn.Module):
+#   def __init__(self, in_channels=19, num_classes=6):
+#     super().__init__()
+#     self.features = nn.Sequential(
+#       nn.Conv2d(in_channels, 32, kernel_size=3, padding=1),
+#       nn.ReLU(),
+#       nn.MaxPool2d(2),
+#       nn.Conv2d(32, 64, kernel_size=3, padding=1),
+#       nn.ReLU(),
+#       nn.MaxPool2d(2),
+#       nn.Conv2d(64, 128, kernel_size=3, padding=1),
+#       nn.ReLU(),
+#       nn.MaxPool2d(2)
+#     )
+#     self.classifier = nn.Sequential(
+#       nn.AdaptiveAvgPool2d((1, 1)),
+#       nn.Flatten(),
+#       nn.Linear(128, num_classes)
+#     )
+
+#   def forward(self, x):
+#     x = self.features(x)
+#     x = self.classifier(x)
+#     return x
+
 class ResidualBlock(nn.Module):
   def __init__(self, c):
     super().__init__()
@@ -56,38 +81,11 @@ class SpectrogramCNN(nn.Module):
     x = self.classifier(x)
     return x
 
-# class SpectrogramCNN(nn.Module):
-#   def __init__(self, in_channels=19, num_classes=6):
-#     super().__init__()
-#     self.features = nn.Sequential(
-#       nn.Conv2d(in_channels, 32, kernel_size=3, padding=1),
-#       nn.ReLU(),
-#       nn.MaxPool2d(2),
-#       nn.Conv2d(32, 64, kernel_size=3, padding=1),
-#       nn.ReLU(),
-#       nn.MaxPool2d(2),
-#       nn.Conv2d(64, 128, kernel_size=3, padding=1),
-#       nn.ReLU(),
-#       nn.MaxPool2d(2)
-#     )
-#     self.classifier = nn.Sequential(
-#       nn.AdaptiveAvgPool2d((1, 1)),
-#       nn.Flatten(),
-#       nn.Linear(128, num_classes)
-#     )
-
-#   def forward(self, x):
-#     x = self.features(x)
-#     x = self.classifier(x)
-#     return x
-
 class SpectrogramDataset(Dataset):
   def __init__(self, folder):
     self.files = sorted(glob.glob(os.path.join(folder, 'SPEC_*.pt')))
-
   def __len__(self):
     return len(self.files)
-
   def __getitem__(self, idx):
     data = torch.load(self.files[idx])
     return data['spectrogram'], data['label']
@@ -151,6 +149,42 @@ def train(
       writer.writerow({"epoch": epoch, "training_loss": tl, "validation_loss": vl, "validation_accuracy": acc, "saved": saved})
 
   print("Training complete.")
+
+def infer(
+  input_tensor: torch.Tensor,
+  model_class,
+  checkpoint_path: str,
+  class_names=None,
+  device=None,
+  **model_kwargs
+):
+  if device is None:
+    device     = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model      = model_class(**model_kwargs).to(device)
+    checkpoint = torch.load(checkpoint_path, map_location = device)
+    model.load_state_dict(checkpoint)
+    model.eval()
+    with torch.no_grad():
+      x = input_tensor.unsqueeze(0).to(device)
+    logits     = model(x)
+    probs      = F.softmax(logits, dim = 1).cpu().squeeze(0)
+    pred_idx   = probs.argmax().item()
+    confidence = probs[pred_idx].item()
+    pred_label = class_names[pred_idx] if class_names else pred_idx
+    return pred_label, confidence, probs.tolist()
+
+  # # load a single spectrogram tensor of shape [C, F, T]
+  # spec = torch.load('data/prep/specs/SPEC_123456789_seizure.pt')['spectrogram']
+  # labels = ['seizure','lpd','gpd','lrda','grda','other']
+  # label, conf, probs = classify_input(
+  #   input_tensor=spec,
+  #   model_class=SpectrogramCNN,
+  #   checkpoint_path='cnn_checkpoint.pth',
+  #   class_names=labels,
+  #   in_channels=19,    # pass any constructor args here
+  #   num_classes=6
+  # )
+  # print(label, conf, probs)
 
 if __name__ == '__main__':
   torch.manual_seed(42)
