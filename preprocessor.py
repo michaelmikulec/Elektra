@@ -1,9 +1,9 @@
 import os
 import glob
-import torch
 import numpy as np
 import pandas as pd
 from scipy.signal import iirnotch, filtfilt, stft
+import torch
 
 def apply_notch_filter(
   df    : pd.DataFrame,
@@ -115,5 +115,22 @@ def convert_to_spectrograms(eeg_dir="data/prep/eegs", spec_dir="data/prep/specs"
     out_path    = os.path.join(spec_dir, out_name)
     torch.save({"spectrogram": spec_tensor, "label": label_idx}, out_path)
 
+def convert_eegs_to_pt(eeg_dir="data/prep/eegs", out_dir="data/prep/eegs_pt", classes=None):
+  os.makedirs(out_dir, exist_ok=True)
+  cls2idx = {c:i for i,c in enumerate(classes or [])}
+  for path in glob.glob(os.path.join(eeg_dir, '*.parquet')):
+    fn         = os.path.basename(path)
+    name       = fn.rsplit('.', 1)[0]
+    label_str  = name.split('_')[-1]
+    if label_str not in cls2idx:
+      continue
+    df    = pd.read_parquet(path)
+    data  = torch.from_numpy(df.values).float()  # shape [2000, 19]
+    label = cls2idx[label_str]
+    out_path = os.path.join(out_dir, f"{name}.pt")
+    torch.save({'data': data, 'label': label}, out_path)
+
+
 if __name__ == "__main__":
-  convert_to_spectrograms() 
+  labels = ['seizure', 'lpd', 'gpd', 'lrda', 'grda', 'other']
+  convert_eegs_to_pt(eeg_dir="data/prep/eegs", out_dir="data/prep/eegs_pt", classes=labels)
