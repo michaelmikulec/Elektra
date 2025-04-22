@@ -50,22 +50,36 @@ class EEGTransformer(nn.Module):
     x = self.norm(x)
     return self.classifier(x)
 
+# class EEGDataset(Dataset):
+#   def __init__(self, folder, classes):
+#     self.files   = [f for f in os.listdir(folder) if f.endswith('.parquet')]
+#     self.folder  = folder
+#     self.cls2idx = {c:i for i,c in enumerate(classes)}
+
+#   def __len__(self):
+#     return len(self.files)
+
+#   def __getitem__(self, idx):
+#     fn        = self.files[idx]
+#     label_str = fn.split('_')[-1].split('.')[0]
+#     label_idx = self.cls2idx[label_str]
+#     df        = pd.read_parquet(os.path.join(self.folder, fn))
+#     data      = torch.from_numpy(df.values).float()
+#     return data, torch.tensor(label_idx).long()
+
 class EEGDataset(Dataset):
-  def __init__(self, folder, classes):
-    self.files   = [f for f in os.listdir(folder) if f.endswith('.parquet')]
-    self.folder  = folder
-    self.cls2idx = {c:i for i,c in enumerate(classes)}
+  def __init__(self, folder):
+    self.files = sorted(glob.glob(os.path.join(folder, '*.pt')))
 
   def __len__(self):
     return len(self.files)
 
   def __getitem__(self, idx):
-    fn        = self.files[idx]
-    label_str = fn.split('_')[-1].split('.')[0]
-    label_idx = self.cls2idx[label_str]
-    df        = pd.read_parquet(os.path.join(self.folder, fn))
-    data      = torch.from_numpy(df.values).float()
-    return data, torch.tensor(label_idx).long()
+    sample = torch.load(self.files[idx])
+    data   = sample['data']   # shape [2000, 19]
+    label  = sample['label']
+    data   = data.T           # shape [19, 2000]
+    return data, label
 
 def train(
   model, 
@@ -126,15 +140,15 @@ def train(
 if __name__ == '__main__':
   torch.manual_seed(42)
 
-  data           = "eegs"
+  data           = "data/prep/eegs_pt"
   labels         = ['seizure', 'lpd', 'gpd', 'lrda', 'grda', 'other']
   modelBaseName  = "t4"
   modelPath      = f'models/{modelBaseName}.pth'
   trainingStats  = f'logs/{modelBaseName}_training_stats.csv'
   numWorkers     = 16
-  batchSize      = 128
-  maxSeqLen      = 2000
+  batchSize      = 150
   numChannels    = 19 
+  maxSeqLen      = 2000
   dimModel       = 256
   dimFeedForward = 512
   dropout        = 0.1
@@ -143,7 +157,7 @@ if __name__ == '__main__':
   numClasses     = 6
   epochs         = 50
 
-  dataset        = EEGDataset(data, labels)
+  dataset        = EEGDataset(data)
   lenDS          = len(dataset)
   lenTrainSplit  = int(0.6 * lenDS)
   lenValSplit    = int(0.2 * lenDS)

@@ -3,20 +3,48 @@ from tqdm.auto import tqdm
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader, random_split
+import torch.nn as nn
+import torch.nn.functional as F
+
+class ResidualBlock(nn.Module):
+  def __init__(self, c):
+    super().__init__()
+    self.conv1 = nn.Conv2d(c, c, 3, padding=1)
+    self.bn1   = nn.BatchNorm2d(c)
+    self.conv2 = nn.Conv2d(c, c, 3, padding=1)
+    self.bn2   = nn.BatchNorm2d(c)
+    self.relu  = nn.ReLU()
+
+  def forward(self, x):
+    out = self.conv1(x)
+    out = self.bn1(out)
+    out = self.relu(out)
+    out = self.conv2(out)
+    out = self.bn2(out)
+    return self.relu(x + out)
 
 class SpectrogramCNN(nn.Module):
-  def __init__(self, in_channels=19, num_classes=6):
+  def __init__(self, in_channels=19, num_classes=6, dropout=0.1):
     super().__init__()
     self.features = nn.Sequential(
-      nn.Conv2d(in_channels, 32, kernel_size=3, padding=1),
+      nn.Conv2d(in_channels, 32, 3, padding=1),
+      nn.BatchNorm2d(32),
       nn.ReLU(),
+      nn.Dropout2d(dropout),
       nn.MaxPool2d(2),
-      nn.Conv2d(32, 64, kernel_size=3, padding=1),
+      ResidualBlock(32),
+      nn.Conv2d(32, 64, 3, padding=1),
+      nn.BatchNorm2d(64),
       nn.ReLU(),
+      nn.Dropout2d(dropout),
       nn.MaxPool2d(2),
-      nn.Conv2d(64, 128, kernel_size=3, padding=1),
+      ResidualBlock(64),
+      nn.Conv2d(64, 128, 3, padding=1),
+      nn.BatchNorm2d(128),
       nn.ReLU(),
-      nn.MaxPool2d(2)
+      nn.Dropout2d(dropout),
+      nn.MaxPool2d(2),
+      ResidualBlock(128)
     )
     self.classifier = nn.Sequential(
       nn.AdaptiveAvgPool2d((1, 1)),
@@ -28,6 +56,31 @@ class SpectrogramCNN(nn.Module):
     x = self.features(x)
     x = self.classifier(x)
     return x
+
+# class SpectrogramCNN(nn.Module):
+#   def __init__(self, in_channels=19, num_classes=6):
+#     super().__init__()
+#     self.features = nn.Sequential(
+#       nn.Conv2d(in_channels, 32, kernel_size=3, padding=1),
+#       nn.ReLU(),
+#       nn.MaxPool2d(2),
+#       nn.Conv2d(32, 64, kernel_size=3, padding=1),
+#       nn.ReLU(),
+#       nn.MaxPool2d(2),
+#       nn.Conv2d(64, 128, kernel_size=3, padding=1),
+#       nn.ReLU(),
+#       nn.MaxPool2d(2)
+#     )
+#     self.classifier = nn.Sequential(
+#       nn.AdaptiveAvgPool2d((1, 1)),
+#       nn.Flatten(),
+#       nn.Linear(128, num_classes)
+#     )
+
+#   def forward(self, x):
+#     x = self.features(x)
+#     x = self.classifier(x)
+#     return x
 
 class SpectrogramDataset(Dataset):
   def __init__(self, folder):
@@ -51,8 +104,12 @@ def train(
   modelPath='checkpoint.pth', 
   trainingStats='training_stats.csv'
 ):
-  print("Training...")
   model.to(device)
+  if os.path.isfile(modelPath):
+    model.load_state_dict(torch.load(modelPath, map_location=device))
+    print(f"Resumed from checkpoint {modelPath}")
+
+  print("Training...")
   best_val = float('inf')
   for epoch in range(1, epochs+1):
     print(f'Starting epoch {epoch}/{epochs}')
