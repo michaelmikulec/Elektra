@@ -1,40 +1,6 @@
 import math
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import stft
-
-def df_to_spectrograms(df, fs=200, win_len=256, hop_len=128, n_fft=None, window='hann', to_db=True, fmin=None, fmax=None):
-  channel_names = list(df.columns)
-  if n_fft is None:
-    n_fft = win_len
-  data = df.values.T
-  frequency_bins, time_bins, Z = stft(
-    data,
-    fs=fs,
-    window=window,
-    nperseg=win_len,
-    noverlap=win_len-hop_len,
-    nfft=n_fft,
-    padded=False,
-    boundary=None,
-    axis=-1
-  )
-  S = np.abs(Z)**2
-  if to_db:
-    S = 10 * np.log10(S + 1e-10)
-  mask = np.ones_like(frequency_bins, dtype=bool)
-  if fmin is not None:
-    mask &= (frequency_bins >= fmin)
-  if fmax is not None:
-    mask &= (frequency_bins <= fmax)
-  if not mask.all():
-    S = S[:, mask, :]
-    frequency_bins = frequency_bins[mask]
-  mean = S.mean(axis=2, keepdims=True)
-  std = S.std(axis=2, keepdims=True) + 1e-10
-  spectrograms = (S - mean) / std
-  return spectrograms, channel_names, frequency_bins, time_bins
 
 def plot_spectrogram_grid(S, channel_names, frequency_bins, time_bins, cols=5, figsize=(15, 10), shading='auto', cmap='viridis'):
   n_channels = S.shape[0]

@@ -1,30 +1,9 @@
-import os
-import math
+import os, math
 import pandas as pd
 from tqdm.auto import tqdm
 import torch
 import torch.nn as nn
-import matplotlib.pyplot as plt
 from torch.utils.data import Dataset, DataLoader, random_split
-
-
-class EEGDataset(Dataset):
-  def __init__(self, folder, classes):
-    self.files   = [f for f in os.listdir(folder) if f.endswith('.parquet')]
-    self.folder  = folder
-    self.cls2idx = {c:i for i,c in enumerate(classes)}
-
-  def __len__(self):
-    return len(self.files)
-
-  def __getitem__(self, idx):
-    fn        = self.files[idx]
-    label_str = fn.split('_')[-1].split('.')[0]
-    label_idx = self.cls2idx[label_str]
-    df        = pd.read_parquet(os.path.join(self.folder, fn))
-    data      = torch.from_numpy(df.values).float()
-    return data, torch.tensor(label_idx).long()
-
 
 class EEGTransformer(nn.Module):
   def __init__(
@@ -48,11 +27,11 @@ class EEGTransformer(nn.Module):
     self.register_buffer('pe', pe.unsqueeze(0))
 
     encoder_layer = nn.TransformerEncoderLayer(
-      d_model           = d_model,
-      nhead             = n_heads,
-      dim_feedforward   = d_ff,
-      dropout           = dropout,
-      batch_first       = True
+      d_model         = d_model,
+      nhead           = n_heads,
+      dim_feedforward = d_ff,
+      dropout         = dropout,
+      batch_first     = True
     )
     self.encoder    = nn.TransformerEncoder(encoder_layer, num_layers=n_layers)
     self.norm       = nn.LayerNorm(d_model)
@@ -71,8 +50,24 @@ class EEGTransformer(nn.Module):
     x = self.norm(x)
     return self.classifier(x)
 
+class EEGDataset(Dataset):
+  def __init__(self, folder, classes):
+    self.files   = [f for f in os.listdir(folder) if f.endswith('.parquet')]
+    self.folder  = folder
+    self.cls2idx = {c:i for i,c in enumerate(classes)}
 
-def train( model, train_dl, val_dl, optimizer, criterion, device, epochs, ckptPath='checkpoint.pth'):
+  def __len__(self):
+    return len(self.files)
+
+  def __getitem__(self, idx):
+    fn        = self.files[idx]
+    label_str = fn.split('_')[-1].split('.')[0]
+    label_idx = self.cls2idx[label_str]
+    df        = pd.read_parquet(os.path.join(self.folder, fn))
+    data      = torch.from_numpy(df.values).float()
+    return data, torch.tensor(label_idx).long()
+
+def train(model, train_dl, val_dl, optimizer, criterion, device, epochs, ckptPath='checkpoint.pth'):
   print("Training...")
   model.to(device)
   best_val = float('inf')
