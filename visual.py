@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import stft
 
-def df_to_spectrograms(df, fs=200, win_len=64, hop_len=32, n_fft=None, to_db=True):
+def df_to_spectrograms(df, fs=200, win_len=128, hop_len=64, n_fft=None, to_db=True):
   n_fft = n_fft or win_len
   spectrograms = []
   for ch in df.columns:
@@ -53,11 +53,11 @@ def plot_eeg(df:pd.DataFrame, start:int=0, end:int=-1, fs:int=200) -> None:
   plt.tight_layout()
   plt.show()
 
-plot_eeg(pd.read_parquet("data/prep/eegs/EEG_1000898569_seizure.parquet"))
-plot_spectrogram_grid(
-  *df_to_spectrograms(
-    df:=pd.read_parquet("data/prep/eegs/EEG_1000898569_seizure.parquet"),
-    win_len=128, hop_len=64 
-  ),
-  ch_names=df.columns,
-)
+# plot_eeg(pd.read_parquet("data/prep/eegs/EEG_1000898569_seizure.parquet"))
+# plot_spectrogram_grid(
+#   *df_to_spectrograms(
+#     df:=pd.read_parquet("data/prep/eegs/EEG_1000898569_seizure.parquet"),
+#     win_len=128, hop_len=64 
+#   ),
+#   ch_names=df.columns,
+# )

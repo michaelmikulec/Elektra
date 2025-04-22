@@ -1,13 +1,12 @@
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from ml import random_forest_inference
+from visual import df_to_spectrograms
 
 matplotlib.use("TkAgg")
 
@@ -26,6 +25,8 @@ class ElektraApp:
     self.create_widgets()
     self.create_plots()
   
+  
+
   def create_widgets(self):
     # Frame for top controls
     top_frame = tk.Frame(self.master)
@@ -135,29 +136,56 @@ class ElektraApp:
       messagebox.showinfo("File Uploaded", f"EEG file selected:\n{file_path}")
       self.plot_eeg_data(file_path)
 
-  def plot_eeg_data(self, file_path):
-    # Clear existing plots
-    self.ax_eeg.clear()
-    self.ax_spectrogram.clear()
 
+  def plot_eeg_data(self, file_path):
     df = pd.read_parquet(file_path)
-    time_axis = df.index
-    # Plot raw EEG
-    for column in df.columns:
-      self.ax_eeg.plot(time_axis, df[column], label=column)
+
+    # ---- RAW EEG WITH VERTICAL STACKING ----
+    self.ax_eeg.clear()
+    fs = 200
+    t  = df.index / fs
+
+    # compute one global offset step
+    data_min   = df.values.min()
+    data_max   = df.values.max()
+    data_range = data_max - data_min
+    offset     = data_range * 1.1  # slight extra gap
+
+    yticks      = []
+    yticklabels = []
+    for i, col in enumerate(df.columns):
+      # stack each channel by adding i*offset
+      self.ax_eeg.plot(t, df[col] + i * offset, label=col)
+      yticks.append(i * offset)
+      yticklabels.append(col)
+
+    self.ax_eeg.set_yticks(yticks)
+    self.ax_eeg.set_yticklabels(yticklabels)
     self.ax_eeg.set_title("Raw EEG Signal")
     self.ax_eeg.set_xlabel("Time (s)")
-    self.ax_eeg.set_ylabel("Amplitude")
-    self.ax_eeg.legend(loc="best")
-
-    # Plot spectrogram
-    self.ax_spectrogram.set_title("Spectrogram")
-    self.ax_spectrogram.set_xlabel("Time")
-    self.ax_spectrogram.set_ylabel("Frequency")
-
-    # Refresh canvases
+    self.ax_eeg.set_ylabel("Channel + offset")
     self.canvas_eeg.draw()
+
+    # ---- SPECTROGRAM GRID (unchanged) ----
+    spec, freqs, times = df_to_spectrograms(df, fs=fs, win_len=128, hop_len=64)
+    fig = self.fig_spectrogram
+    fig.clear()
+    fig.set_constrained_layout(True)
+    rows, cols = 5, 4
+    axes = fig.subplots(rows, cols, sharex=True, sharey=True)
+    flat = axes.ravel()
+    for i, ax in enumerate(flat):
+      if i < spec.shape[0]:
+        pcm = ax.pcolormesh(times, freqs, spec[i],
+                            shading="gouraud", cmap="viridis")
+        ax.set_title(df.columns[i], fontsize=8)
+        ax.label_outer()
+      else:
+        ax.axis("off")
+    fig.colorbar(pcm, ax=axes.flatten().tolist(),
+                orientation="vertical", label="Power (dB)")
     self.canvas_spectrogram.draw()
+
 
   def run_inference(self):
     if not self.eeg_file_path:
@@ -179,6 +207,8 @@ class ElektraApp:
 
     except Exception as e:
         messagebox.showerror("Error", f"Failed to run inference:\n{e}")
+
+
 
 def main():
     root = tk.Tk()
