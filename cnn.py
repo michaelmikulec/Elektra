@@ -2,9 +2,8 @@ import os, csv, glob
 from tqdm.auto import tqdm
 import torch
 import torch.nn as nn
-from torch.utils.data import Dataset, DataLoader, random_split
-import torch.nn as nn
 import torch.nn.functional as F
+from torch.utils.data import Dataset, DataLoader, random_split
 
 class ResidualBlock(nn.Module):
   def __init__(self, c):
@@ -101,8 +100,8 @@ def train(
   criterion, 
   device, 
   epochs, 
-  modelPath='checkpoint.pth', 
-  trainingStats='training_stats.csv'
+  modelPath='cnn.pth', 
+  trainingStats='cnn_training_stats.csv'
 ):
   model.to(device)
   if os.path.isfile(modelPath):
@@ -157,12 +156,12 @@ if __name__ == '__main__':
   torch.manual_seed(42)
 
   dataDir       = "data/prep/specs"
-  modelBaseName = "cnn1"
+  modelBaseName = "cnn2"
   modelPath     = f"models/{modelBaseName}.pth"
   trainingStats = f"logs/{modelBaseName}_training_stats.csv"
-  numWorkers    = 16
-  batchSize     = 150
-  epochs        = 50
+  numWorkers    = 15
+  batchSize     = 2048
+  epochs        = 100
   dataset       = SpectrogramDataset(dataDir)
   lenDS         = len(dataset)
   lenTrainSplit = int(0.6 * lenDS)
