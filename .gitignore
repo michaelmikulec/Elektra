@@ -2,3 +2,5 @@
 .vscode
 archive
 checkpoints
+models
+data
