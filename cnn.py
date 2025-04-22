@@ -194,7 +194,7 @@ if __name__ == '__main__':
   modelPath     = f"models/{modelBaseName}.pth"
   trainingStats = f"logs/{modelBaseName}_training_stats.csv"
   numWorkers    = 15
-  batchSize     = 2048
+  batchSize     = 500
   epochs        = 100
   dataset       = SpectrogramDataset(dataDir)
   lenDS         = len(dataset)
