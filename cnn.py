@@ -10,9 +10,6 @@ from torch.optim import Adam
 from tqdm import trange, tqdm
 from sklearn.metrics import accuracy_score, roc_auc_score
 
-from dl.dh.dh import getDataloader
-from dl.prep.prep import get_spec_event_window
-
 class SpectrogramCNN(nn.Module):
   def __init__(self, input_shape=(5, 400), num_classes=6):
     super().__init__()

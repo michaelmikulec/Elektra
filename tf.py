@@ -72,95 +72,69 @@ class EEGTransformer(nn.Module):
     return self.classifier(x)
 
 
-def train(
-  model, train_dl, val_dl,
-  optimizer, criterion,
-  device, epochs, ckpt_path='checkpoint.pth'
-):
+def train( model, train_dl, val_dl, optimizer, criterion, device, epochs, ckptPath='checkpoint.pth'):
   print("Training...")
   model.to(device)
   best_val = float('inf')
   train_losses, val_losses, val_accs = [], [], []
-
   for epoch in range(1, epochs+1):
     print(f'Starting epoch {epoch}/{epochs}')
     model.train()
     tl = 0.0
-    for xb, yb in tqdm(train_dl,
-                       desc=f'Train Epoch {epoch}/{epochs}',
-                       leave=False):
+    for xb, yb in tqdm(train_dl, desc=f'Train Epoch {epoch}/{epochs}', leave=False):
       xb, yb = xb.to(device), yb.to(device)
       optimizer.zero_grad(set_to_none=True)
-      out   = model(xb)
-      loss  = criterion(out, yb)
+      out  = model(xb)
+      loss = criterion(out, yb)
       loss.backward()
       optimizer.step()
-      tl   += loss.item() * xb.size(0)
+      tl += loss.item() * xb.size(0)
     tl /= len(train_dl.dataset)
 
     print("Evaluating on validation set...")
     model.eval()
     vl, correct = 0.0, 0
-    for xb, yb in tqdm(val_dl,
-                       desc=f'Val   Epoch {epoch}/{epochs}',
-                       leave=False):
-      xb, yb = xb.to(device), yb.to(device)
-      out   = model(xb)
-      loss  = criterion(out, yb)
-      vl    += loss.item() * xb.size(0)
+    for xb, yb in tqdm(val_dl, desc=f'Val   Epoch {epoch}/{epochs}', leave=False):
+      xb, yb  = xb.to(device), yb.to(device)
+      out     = model(xb)
+      loss    = criterion(out, yb)
+      vl      += loss.item() * xb.size(0)
       correct += (out.argmax(1) == yb).sum().item()
     vl   /= len(val_dl.dataset)
     acc  = correct / len(val_dl.dataset)
-
     train_losses.append(tl)
     val_losses.append(vl)
     val_accs.append(acc)
 
-    print(f'Epoch {epoch}/{epochs} train_loss={tl:.4f} '
-          f'val_loss={vl:.4f} val_acc={acc:.4f}')
+    print(f'Epoch {epoch}/{epochs} train_loss={tl:.4f} val_loss={vl:.4f} val_acc={acc:.4f}')
     if vl < best_val:
       best_val = vl
-      torch.save(model.state_dict(), ckpt_path)
+      torch.save(model.state_dict(), ckptPath)
 
   print("Training complete.")
   return train_losses, val_losses, val_accs
 
+if __name__ == '__main__':
+  data   = "data/prep/eegs"
+  labels = ['seizure', 'lpd', 'gpd', 'lrda', 'grda', 'other']
 
-data = "data/prep/eegs"
-labels = ['seizure', 'lpd', 'gpd', 'lrda', 'grda', 'other']
+  print("Loading data...")
+  dataset = EEGDataset(data, labels)
+  n       = len(dataset)
+  trainn  = int(0.6 * n)
+  valn    = int(0.2 * n)
+  testn   = n - trainn - valn
+  torch.manual_seed(42)
 
-print("Loading data...")
-dataset = EEGDataset(data, labels)
-n      = len(dataset)
-trainn = int(0.6 * n)
-valn   = int(0.2 * n)
-testn  = n - trainn - valn
-torch.manual_seed(42)
-
-print("Splitting data into train, val, and test sets...")
-train_ds, val_ds, test_ds = random_split(dataset, [trainn, valn, testn])
-train_dl = DataLoader(train_ds, batch_size=256, shuffle=True,  num_workers=16, pin_memory=True)
-val_dl   = DataLoader(val_ds,   batch_size=256, shuffle=False, num_workers=16, pin_memory=True)
-test_dl  = DataLoader(test_ds,  batch_size=256, shuffle=False, num_workers=16, pin_memory=True)
-
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model  = EEGTransformer()
-opt    = torch.optim.AdamW(model.parameters(), lr=1e-4)
-crit   = torch.nn.CrossEntropyLoss()
-train_losses, val_losses, val_accs = train(model, train_dl, val_dl, opt, crit, device, epochs=10, ckpt_path='checkpoint.pth')
-
-# Loss curve
-plt.figure()
-plt.plot(train_losses, label='train loss')
-plt.plot(val_losses,   label='val loss')
-plt.xlabel('Epoch')
-plt.ylabel('Loss')
-plt.legend()
-plt.show()
-
-# Accuracy curve
-plt.figure()
-plt.plot(val_accs)
-plt.xlabel('Epoch')
-plt.ylabel('Validation Accuracy')
-plt.show()
+  print("Splitting data into train, val, and test sets...")
+  train_ds, val_ds, test_ds = random_split(dataset, [trainn, valn, testn])
+  train_dl = DataLoader(train_ds, batch_size=256, shuffle=True,  num_workers=16, pin_memory=True)
+  val_dl   = DataLoader(val_ds,   batch_size=256, shuffle=False, num_workers=16, pin_memory=True)
+  test_dl  = DataLoader(test_ds,  batch_size=256, shuffle=False, num_workers=16, pin_memory=True)
+  device   = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+  model    = EEGTransformer()
+  opt      = torch.optim.AdamW(model.parameters(), lr=1e-4)
+  crit     = torch.nn.CrossEntropyLoss()
+  epochs   = 50
+  ckptPath = 'checkpoint.pth'
+  train_losses, val_losses, val_accs = train(model, train_dl, val_dl, opt, crit, device, epochs=epochs, ckptPath=ckptPath)
