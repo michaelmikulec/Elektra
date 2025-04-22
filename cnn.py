@@ -150,6 +150,22 @@ def train(
 
   print("Training complete.")
 
+def infer_transformer(eeg_path, checkpoint_path, class_names, device=None, **model_kwargs):
+  if device is None:
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+  df = pd.read_parquet(eeg_path)
+  x = torch.from_numpy(df.values).float().unsqueeze(0).to(device)
+  model = EEGTransformer(**model_kwargs).to(device)
+  model.load_state_dict(torch.load(checkpoint_path, map_location=device))
+  model.eval()
+  with torch.no_grad():
+    logits = model(x)
+    probs = F.softmax(logits, dim=1).cpu().squeeze(0)
+  idx = probs.argmax().item()
+  pred = class_names[idx]
+  conf = probs[idx].item()
+  return pred, conf, conf
+
 def infer_cnn(eeg_path, checkpoint_path, class_names, device=None, **model_kwargs):
   if device is None:
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -163,7 +179,9 @@ def infer_cnn(eeg_path, checkpoint_path, class_names, device=None, **model_kwarg
     logits = model(x)
     probs = F.softmax(logits, dim=1).cpu().squeeze(0)
   idx = probs.argmax().item()
-  return class_names[idx], probs[idx].item(), probs.tolist()
+  pred = class_names[idx]
+  conf = probs[idx].item()
+  return pred, conf, conf
 
 
   # # load a single spectrogram tensor of shape [C, F, T]

@@ -69,24 +69,36 @@ class ElektraApp:
       messagebox.showwarning("No File", "Please upload an EEG file first.")
       return
     model_type = self.selectedModel.get()
+    class_names = ['seizure','lpd','gpd','lrda','grda','other']
     try:
       if model_type == "Random Forest":
         result, _, confidence = random_forest_inference(self.eegFilePath)
-        accuracy = 0.57  # ⬅️ Fixed accuracy for RF model
-      if model_type == "Transformer":
+        accuracy = 0.57
+      elif model_type == "Transformer":
         tconfig = {
-          "maxSeqLen" : 2000,
-          "numChannels" : 19,
-          "dimModel" : 256,
-          "dimFeedForward" : 512,
-          "dropout" : 0.1,
-          "numHeads" : 8,
-          "numLayers" : 6,
-          "numClasses" : 6
+          "maxSeqLen":2000,
+          "numChannels":19,
+          "dimModel":256,
+          "dimFeedForward":512,
+          "dropout":0.1,
+          "numHeads":8,
+          "numLayers":6,
+          "numClasses":6
         }
-        result, accuracy, confidence = infer_transformer(self.eegFilePath, "models/t5.pth", ['seizure', 'lpd', 'gpd', 'lrda', 'grda', 'other'])
-      if model_type == "CNN":
-        result, accuracy, confidence = infer_cnn(self.eegFilePath)
+        result, accuracy, confidence = infer_transformer(
+          self.eegFilePath,
+          "models/t5.pth",
+          class_names,
+          **tconfig
+        )
+      elif model_type == "CNN":
+        result, accuracy, confidence = infer_cnn(
+          self.eegFilePath,
+          "models/cnn.pth",
+          class_names,
+          in_channels=19,
+          num_classes=6
+        )
       else:
         result, accuracy, confidence = "Coming Soon", 0.0, 0.0
       self.inferenceResultLabel.config(text=f"Inference Result: {result}")

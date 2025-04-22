@@ -3,6 +3,7 @@ import pandas as pd
 from tqdm.auto import tqdm
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader, random_split
 
 # class EEGDataset(Dataset):
@@ -143,7 +144,9 @@ def infer_transformer(eeg_path, checkpoint_path, class_names, device=None, **mod
     logits = model(x)
     probs = F.softmax(logits, dim=1).cpu().squeeze(0)
   idx = probs.argmax().item()
-  return class_names[idx], probs[idx].item(), probs.tolist()
+  pred = class_names[idx]
+  conf = probs[idx].item()
+  return pred, conf, conf
 
 if __name__ == '__main__':
   torch.manual_seed(42)
