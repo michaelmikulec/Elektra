@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from predictor import random_forest_inference
 from preprocessor import df_to_spectrograms
 
 matplotlib.use("TkAgg")

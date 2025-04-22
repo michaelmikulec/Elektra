@@ -8,8 +8,8 @@ import mne
 
 FS = 200
 
-MODEL_PATH = "C:/Users/Kevin Tran/Documents/Project Data/random_forest_eeg_model_flat.pkl"
-ENCODER_PATH = "C:/Users/Kevin Tran/Documents/Project Data/label_encoder_flat.pkl"
+MODEL_PATH = "models/rf/random_forest_eeg_model_flat.pkl"
+ENCODER_PATH = "models/rf/label_encoder_flat.pkl"
 
 BANDS = {
     "delta": (1, 3), "theta": (4, 7), "alpha1": (8, 9), "alpha2": (10, 12),
