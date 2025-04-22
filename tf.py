@@ -1,4 +1,4 @@
-import os, csv, math
+import os, csv, math, glob
 import pandas as pd
 from tqdm.auto import tqdm
 import torch
@@ -76,9 +76,8 @@ class EEGDataset(Dataset):
 
   def __getitem__(self, idx):
     sample = torch.load(self.files[idx])
-    data   = sample['data']   # shape [2000, 19]
+    data   = sample['data']   
     label  = sample['label']
-    data   = data.T           # shape [19, 2000]
     return data, label
 
 def train(
@@ -141,18 +140,17 @@ if __name__ == '__main__':
   torch.manual_seed(42)
 
   data           = "data/prep/eegs_pt"
-  labels         = ['seizure', 'lpd', 'gpd', 'lrda', 'grda', 'other']
-  modelBaseName  = "t4"
+  modelBaseName  = "t5"
   modelPath      = f'models/{modelBaseName}.pth'
   trainingStats  = f'logs/{modelBaseName}_training_stats.csv'
-  numWorkers     = 16
-  batchSize      = 150
+  numWorkers     = 15
+  batchSize      = 100
   numChannels    = 19 
   maxSeqLen      = 2000
   dimModel       = 256
   dimFeedForward = 512
   dropout        = 0.1
-  numHeads       = 16
+  numHeads       = 8
   numLayers      = 6
   numClasses     = 6
   epochs         = 50
