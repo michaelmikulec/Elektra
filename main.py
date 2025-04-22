@@ -7,6 +7,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from predictor import random_forest_inference
+from tf import infer_transformer
+from cnn import infer_cnn
 from preprocessor import df_to_spectrograms
 
 matplotlib.use("TkAgg")

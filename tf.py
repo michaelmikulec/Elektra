@@ -129,7 +129,21 @@ def train(
       if f.tell() == 0:
         writer.writeheader()
       writer.writerow({"epoch": epoch, "training_loss": tl, "validation_loss": vl, "validation_accuracy": acc, "saved": saved})
-  print("Training complete.")
+print("Training complete.")
+
+def infer_transformer(eeg_path, checkpoint_path, class_names, device=None, **model_kwargs):
+  if device is None:
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+  df = pd.read_parquet(eeg_path)
+  x = torch.from_numpy(df.values).float().unsqueeze(0).to(device)
+  model = EEGTransformer(**model_kwargs).to(device)
+  model.load_state_dict(torch.load(checkpoint_path, map_location=device))
+  model.eval()
+  with torch.no_grad():
+    logits = model(x)
+    probs = F.softmax(logits, dim=1).cpu().squeeze(0)
+  idx = probs.argmax().item()
+  return class_names[idx], probs[idx].item(), probs.tolist()
 
 if __name__ == '__main__':
   torch.manual_seed(42)

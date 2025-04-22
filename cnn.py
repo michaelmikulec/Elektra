@@ -150,28 +150,21 @@ def train(
 
   print("Training complete.")
 
-def infer(
-  input_tensor: torch.Tensor,
-  model_class,
-  checkpoint_path: str,
-  class_names=None,
-  device=None,
-  **model_kwargs
-):
+def infer_cnn(eeg_path, checkpoint_path, class_names, device=None, **model_kwargs):
   if device is None:
-    device     = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model      = model_class(**model_kwargs).to(device)
-    checkpoint = torch.load(checkpoint_path, map_location = device)
-    model.load_state_dict(checkpoint)
-    model.eval()
-    with torch.no_grad():
-      x = input_tensor.unsqueeze(0).to(device)
-    logits     = model(x)
-    probs      = F.softmax(logits, dim = 1).cpu().squeeze(0)
-    pred_idx   = probs.argmax().item()
-    confidence = probs[pred_idx].item()
-    pred_label = class_names[pred_idx] if class_names else pred_idx
-    return pred_label, confidence, probs.tolist()
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+  df = pd.read_parquet(eeg_path)
+  spec, _, _, _ = df_to_spectrograms(df)
+  x = torch.from_numpy(spec).float().unsqueeze(0).to(device)
+  model = SpectrogramCNN(**model_kwargs).to(device)
+  model.load_state_dict(torch.load(checkpoint_path, map_location=device))
+  model.eval()
+  with torch.no_grad():
+    logits = model(x)
+    probs = F.softmax(logits, dim=1).cpu().squeeze(0)
+  idx = probs.argmax().item()
+  return class_names[idx], probs[idx].item(), probs.tolist()
+
 
   # # load a single spectrogram tensor of shape [C, F, T]
   # spec = torch.load('data/prep/specs/SPEC_123456789_seizure.pt')['spectrogram']
