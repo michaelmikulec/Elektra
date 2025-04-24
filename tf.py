@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader, random_split
+from preprocessor import df_to_spectrograms
 
 # class EEGDataset(Dataset):
 #   def __init__(self, folder, classes):

@@ -94,7 +94,7 @@ class ElektraApp:
       elif model_type == "CNN":
         result, accuracy, confidence = infer_cnn(
           self.eegFilePath,
-          "models/cnn.pth",
+          "models/cnn2.pth",
           class_names,
           in_channels=19,
           num_classes=6

@@ -1,9 +1,11 @@
 import os, csv, glob
 from tqdm.auto import tqdm
+import pandas as pd
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader, random_split
+from preprocessor import df_to_spectrograms
 
 # class SpectrogramCNN(nn.Module):
 #   def __init__(self, in_channels=19, num_classes=6):
