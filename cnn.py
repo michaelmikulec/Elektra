@@ -7,31 +7,6 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader, random_split
 from preprocessor import df_to_spectrograms
 
-# class SpectrogramCNN(nn.Module):
-#   def __init__(self, in_channels=19, num_classes=6):
-#     super().__init__()
-#     self.features = nn.Sequential(
-#       nn.Conv2d(in_channels, 32, kernel_size=3, padding=1),
-#       nn.ReLU(),
-#       nn.MaxPool2d(2),
-#       nn.Conv2d(32, 64, kernel_size=3, padding=1),
-#       nn.ReLU(),
-#       nn.MaxPool2d(2),
-#       nn.Conv2d(64, 128, kernel_size=3, padding=1),
-#       nn.ReLU(),
-#       nn.MaxPool2d(2)
-#     )
-#     self.classifier = nn.Sequential(
-#       nn.AdaptiveAvgPool2d((1, 1)),
-#       nn.Flatten(),
-#       nn.Linear(128, num_classes)
-#     )
-
-#   def forward(self, x):
-#     x = self.features(x)
-#     x = self.classifier(x)
-#     return x
-
 class ResidualBlock(nn.Module):
   def __init__(self, c):
     super().__init__()
@@ -184,20 +159,6 @@ def infer_cnn(eeg_path, checkpoint_path, class_names, device=None, **model_kwarg
   pred = class_names[idx]
   conf = probs[idx].item()
   return pred, conf, conf
-
-
-  # # load a single spectrogram tensor of shape [C, F, T]
-  # spec = torch.load('data/prep/specs/SPEC_123456789_seizure.pt')['spectrogram']
-  # labels = ['seizure','lpd','gpd','lrda','grda','other']
-  # label, conf, probs = classify_input(
-  #   input_tensor=spec,
-  #   model_class=SpectrogramCNN,
-  #   checkpoint_path='cnn_checkpoint.pth',
-  #   class_names=labels,
-  #   in_channels=19,    # pass any constructor args here
-  #   num_classes=6
-  # )
-  # print(label, conf, probs)
 
 if __name__ == '__main__':
   torch.manual_seed(42)
