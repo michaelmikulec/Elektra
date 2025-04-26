@@ -30,37 +30,42 @@ class ElektraApp:
     self.create_plots()
 
   def create_widgets(self):
-    topFrame      = tk.Frame(self.master)
-    titleLabel    = tk.Label( topFrame, text="Elektra: Harmful Brain Activity Classifier", font=boldFont)
-    modelLabel    = tk.Label(topFrame, text="Select Model:", font=font)
+    frame1        = tk.Frame(self.master)
+    titleLabel    = tk.Label(frame1, text="Elektra: Harmful Brain Activity Classifier", font=boldFont)
+    modelLabel    = tk.Label(frame1, text="Select Model:", font=font)
     modelOptions  = ["Random Forest", "Transformer", "CNN"]
-    modelSelector = ttk.Combobox(topFrame, textvariable=self.selectedModel, values=modelOptions, font=font, state="readonly")
-    buttonFrame   = tk.Frame(self.master)
-    uploadButton  = tk.Button( buttonFrame, text="Upload", font=font, command=self.upload_file)
-    runButton     = tk.Button( buttonFrame, text="Run", font=font, command=self.run_inference)
-    resultsFrame  = tk.Frame(self.master)
+    modelSelector = ttk.Combobox(frame1, textvariable=self.selectedModel, values=modelOptions, font=font, state="readonly")
 
-    topFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=5)
+    frame1.pack(side=tk.TOP, fill=tk.X, padx=10, pady=5)
     titleLabel.pack(side=tk.LEFT, padx=10)
     modelLabel.pack(side=tk.LEFT, padx=10)
     modelSelector.pack(side=tk.LEFT, padx=5)
-    buttonFrame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=5)
+
+    frame2        = tk.Frame(self.master)
+    uploadButton  = tk.Button(frame2, text="Upload", font=font, command=self.upload_file)
+    runButton     = tk.Button(frame2, text="Run", font=font, command=self.run_inference)
+    fileLabel     = tk.Label(frame2, text="Selected File:", font=font)
+    self.fileName = tk.Label(frame2, text="No file selected", font=font)
+
+    frame2.pack(side=tk.TOP, fill=tk.X, padx=10, pady=5)
     uploadButton.pack(side=tk.LEFT, padx=5)
     runButton.pack(side=tk.LEFT, padx=5)
-    resultsFrame.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=5)
+    fileLabel.pack(side=tk.LEFT, padx=10)
+    self.fileName.pack(side=tk.LEFT, padx=10)
 
+    resultsFrame  = tk.Frame(self.master)
     self.inferenceResultLabel = tk.Label(resultsFrame, text="Inference Result: N/A", font=font)
-    self.modelAccuracyLabel   = tk.Label(resultsFrame, text="Model Accuracy: N/A", font=font)
     self.modelConfidenceLabel = tk.Label(resultsFrame, text="Confidence: N/A", font=font)
 
+    resultsFrame.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=5)
     self.inferenceResultLabel.pack(side=tk.TOP, anchor="w", pady=2)
-    self.modelAccuracyLabel.pack(side=tk.TOP, anchor="w", pady=2)
     self.modelConfidenceLabel.pack(side=tk.TOP, anchor="w", pady=2)
 
   def upload_file(self):
     fPath = filedialog.askopenfilename(title="Select EEG File", filetypes=(("EEG File", "*.parquet"), ("All Files", "*.*")))
     if fPath:
       self.eegFilePath = fPath
+      self.fileName.config(text=f"{os.path.basename(fPath)}")
       messagebox.showinfo("File Uploaded", f"EEG file selected:\n{fPath}")
       self.plot_eeg_data(fPath)
 
@@ -72,8 +77,9 @@ class ElektraApp:
     class_names = ['seizure','lpd','gpd','lrda','grda','other']
     try:
       if model_type == "Random Forest":
-        result, _, confidence = random_forest_inference(self.eegFilePath)
-        accuracy = 0.57
+        result, confidence = random_forest_inference(self.eegFilePath)
+        self.inferenceResultLabel.config(text=f"Inference Result: {result}")
+        self.modelConfidenceLabel.config(text=f"Confidence: {confidence:.2f}")
       elif model_type == "Transformer":
         tconfig = {
           "maxSeqLen":2000,
@@ -85,25 +91,26 @@ class ElektraApp:
           "numLayers":6,
           "numClasses":6
         }
-        result, accuracy, confidence = infer_transformer(
+        result, _, confidence = infer_transformer(
           self.eegFilePath,
           "models/t5.pth",
           class_names,
           **tconfig
         )
+        self.inferenceResultLabel.config(text=f"Inference Result: {result}")
+        self.modelConfidenceLabel.config(text=f"Confidence: {confidence:.2f}")
       elif model_type == "CNN":
-        result, accuracy, confidence = infer_cnn(
+        result, _, confidence = infer_cnn(
           self.eegFilePath,
           "models/cnn2.pth",
           class_names,
           in_channels=19,
           num_classes=6
         )
+        self.inferenceResultLabel.config(text=f"Inference Result: {result}")
+        self.modelConfidenceLabel.config(text=f"Confidence: {confidence:.2f}")
       else:
-        result, accuracy, confidence = "Coming Soon", 0.0, 0.0
-      self.inferenceResultLabel.config(text=f"Inference Result: {result}")
-      self.modelAccuracyLabel.config(text=f"Model Accuracy: {accuracy:.2f}")
-      self.modelConfidenceLabel.config(text=f"Confidence: {confidence:.2f}")
+        result, _, confidence = "Coming Soon", 0.0
     except Exception as e:
       messagebox.showerror("Error", f"Failed to run inference:\n{e}")
 
